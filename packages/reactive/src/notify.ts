@@ -1,7 +1,7 @@
 import { batchDepth } from "./batch.js";
 import type { Computed } from "./computed.js";
 import { hasFlag, NodeFlags, NodeKind } from "./core/flags.js";
-import type { Observer } from "./core/Node.js";
+import type { Observer } from "./core/node.js";
 import type { Effect } from "./effect.js";
 import { jobQueue, queueFlush } from "./scheduler.js";
 

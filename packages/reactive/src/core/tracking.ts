@@ -1,4 +1,4 @@
-import type { Observer } from "./Node.js";
+import type { Observer } from "./node.js";
 
 export let currentObserver: Observer[] = [];
 

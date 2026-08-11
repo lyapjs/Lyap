@@ -1,10 +1,7 @@
-import type { Computed } from "./computed.js";
 import { NodeKind } from "./core/flags.js";
-import { Node, type Observer, type Source } from "./core/Node.js";
+import { Node, type Observer, type Source } from "./core/node.js";
 import { currentObserver } from "./core/tracking.js";
-import type { Effect } from "./effect.js";
 import { notify, NotifyType } from "./notify.js";
-import { jobQueue, queueFlush } from "./scheduler.js";
 
 export class Signal<T> extends Node implements Source {
   private _value: T;

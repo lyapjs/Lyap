@@ -1,5 +1,5 @@
 // will be used in later versions
-import type { Node } from "./Node.js";
+import type { Node } from "./node.js";
 
 export class Edge {
     source: Node | null = null;
