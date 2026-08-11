@@ -2,7 +2,10 @@
   "name": "@lyapjs/reactive",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/src/index.js",
+  "exports": {
+    ".": "./dist/src/index.js"
+  },
   "scripts": {
     "test": "vitest run"
   },
