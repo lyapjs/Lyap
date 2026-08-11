@@ -1,22 +1,23 @@
-import { runEffect } from "./effect.js";
-import type { Listener } from "./signal.js";
+import type { Effect } from "./effect.js";
 
-export type JobQueue = Set<Listener>
+export type JobQueue = Set<Effect>
 
 export const jobQueue: JobQueue = new Set();
 
 let isFlushing = false;
 
-function flushJobs() {
+export function flushJobs() {
     if (isFlushing) return;
 
     isFlushing = true;
 
-    for (const effect of jobQueue) {
-        runEffect(effect);
+    while (jobQueue.size > 0) {
+        const jobs = Array.from(jobQueue);
+        jobQueue.clear();
+        for (const effect of jobs) {
+            effect.runEffect();
+        }
     }
-
-    jobQueue.clear();
 
     isFlushing = false;
 }

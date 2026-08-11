@@ -13,7 +13,7 @@ export const enum NodeFlags {
 }
 
 export interface Flagged {
-    flags: number;
+    flags: NodeFlags;
 }
 
 

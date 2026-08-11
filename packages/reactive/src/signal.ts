@@ -1,16 +1,14 @@
+import type { Computed } from "./computed.js";
 import { NodeKind } from "./core/flags.js";
-import { Node } from "./core/Node.js";
-import { currentListener } from "./effect.js";
+import { Node, type Observer, type Source } from "./core/Node.js";
+import { currentObserver } from "./core/tracking.js";
+import type { Effect } from "./effect.js";
+import { notify, NotifyType } from "./notify.js";
 import { jobQueue, queueFlush } from "./scheduler.js";
 
-export interface Listener {
-  fn: () => void;
-  deps: Set<Signal<any>>
-}
-
-export class Signal<T> extends Node{
+export class Signal<T> extends Node implements Source {
   private _value: T;
-  subscribers: Set<Listener> = new Set();
+  observers: Set<Observer> = new Set();
 
   constructor(initialValue: T) {
     super(NodeKind.SIGNAL);
@@ -18,22 +16,24 @@ export class Signal<T> extends Node{
   }
 
   get value(): T {
-    if (currentListener.length !== 0) {
-      const listener = currentListener[currentListener.length - 1] as Listener;
-      this.subscribers.add(listener);
-      listener.deps.add(this);
+    if (currentObserver.length !== 0) {
+      const observer = currentObserver[currentObserver.length - 1] as Observer;
+      this.observers.add(observer);
+      observer.sources.add(this);
     }
     return this._value;
+  }
+
+  set value(newValue: T) {
+    this.set(newValue);
   }
 
   set(newValue: T): void {
     if (Object.is(this._value, newValue)) return;
 
     this._value = newValue;
-    for (const listener of this.subscribers) {
-      jobQueue.add(listener);
-    }
-    queueFlush();
+    this.version++;
+    notify(this.observers, NotifyType.DIRTY);
   }
 }
 

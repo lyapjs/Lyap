@@ -1,23 +1,48 @@
 import { cleanup } from "./cleanup.js";
-import type { Listener } from "./signal.js";
+import { addFlag, NodeFlags, NodeKind, hasFlag } from "./core/flags.js";
+import { Node, type EffectFn, type Observer, type Source } from "./core/Node.js";
+import { currentObserver } from "./core/tracking.js";
+import { currentOwner } from "./owner.js";
 
-export let currentListener: Listener[] = [];
+export class Effect extends Node implements Observer {
+  sources = new Set<Source>();
+  private fn: EffectFn;
+  private cleanupFn?: (() => void) | undefined;
+  constructor(fn: EffectFn) {
+    super(NodeKind.EFFECT);
+    this.fn = fn;
+  }
 
-function createEffect(fn: () => void): Listener {
-  return {
-    fn,
-    deps: new Set(),
+  dispose() {
+    if (this.cleanupFn) {
+      this.cleanupFn();
+      this.cleanupFn = undefined;
+    }
+    cleanup(this);
+    addFlag(this, NodeFlags.DISPOSED);
+  }
+
+  runEffect() {
+    if (hasFlag(this, NodeFlags.DISPOSED)) return;
+    if (this.cleanupFn) {
+      this.cleanupFn();
+      this.cleanupFn = undefined;
+    }
+    cleanup(this);
+    currentObserver.push(this);
+    try {
+      const res = this.fn();
+      if (typeof res === 'function') {
+        this.cleanupFn = res;
+      }
+    } finally {
+      currentObserver.pop();
+    }
   }
 }
 
-export function effect(fn: () => void) {
-  const effect = createEffect(fn);
-  runEffect(effect);
-}
-
-export function runEffect(effect: Listener) {
-  cleanup(effect);
-  currentListener.push(effect);
-  effect.fn();
-  currentListener.pop();
+export function effect(fn: EffectFn) {
+  const e = new Effect(fn);
+  currentOwner?.resources.add(e);
+  return e;
 }

@@ -1,10 +1,10 @@
-import type { Listener } from "./signal.js";
+import type { Observer } from "./core/Node.js";
 
-export function cleanup(listener: Listener) {
+export function cleanup(observer: Observer) {
 
-    for (const signal of listener.deps) {
-        signal.subscribers.delete(listener);
+    for (const source of observer.sources) {
+        source.observers.delete(observer);
     };
 
-    listener.deps.clear();
+    observer.sources.clear();
 }
