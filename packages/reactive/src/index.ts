@@ -1,7 +1,7 @@
-export { Signal, signal } from './signal.js';
-export { Computed, computed } from './computed.js';
-export { Effect, effect } from './effect.js';
-export { Owner, scope } from './owner.js';
-export { untrack } from './untrack.js';
-export { batch } from './batch.js';
-export { watch, type WatchSource, type WatchOptions } from './watch.js';
+export { Signal, signal } from './primitives/signal.js';
+export { Computed, computed } from './primitives/computed.js';
+export { Effect, effect } from './primitives/effect.js';
+export { Owner, scope, onCleanup } from './primitives/owner.js';
+export { untrack } from './utils/untrack.js';
+export { batch } from './utils/batch.js';
+export { watch, type WatchSource, type WatchOptions } from './utils/watch.js';

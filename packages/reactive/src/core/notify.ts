@@ -1,8 +1,8 @@
-import { batchDepth } from "./batch.js";
-import type { Computed } from "./computed.js";
-import { hasFlag, NodeFlags, NodeKind } from "./core/flags.js";
-import type { Observer } from "./core/node.js";
-import type { Effect } from "./effect.js";
+import { batchDepth } from "../utils/batch.js";
+import type { Computed } from "../primitives/computed.js";
+import { hasFlag, NodeFlags, NodeKind } from "./flags.js";
+import type { Observer } from "./node.js";
+import type { Effect } from "../primitives/effect.js";
 import { jobQueue, queueFlush } from "./scheduler.js";
 
 export const enum NotifyType {
@@ -26,6 +26,5 @@ export function notify<T>(observers: Set<Observer>, type: NotifyType) {
     }
     if (isEffectSet && batchDepth === 0) {
         queueFlush();
-        isEffectSet = false;
     }
 }

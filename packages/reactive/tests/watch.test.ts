@@ -1,7 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { signal } from '../src/signal.js';
-import { computed } from '../src/computed.js';
-import { watch } from '../src/watch.js';
+import { signal, computed, watch } from '../src/index.js';
 
 describe('Watch Reactive Utility Tests', () => {
     it('does not trigger callback initially by default', () => {
@@ -99,14 +97,12 @@ describe('Watch Reactive Utility Tests', () => {
         await new Promise((r) => setTimeout(r, 0));
         expect(cb).toHaveBeenCalledTimes(1);
 
-        // Dispose watcher
         unwatch();
 
         count.set(2);
         await Promise.resolve();
         await new Promise((r) => setTimeout(r, 0));
 
-        // Callback should NOT be called again
         expect(cb).toHaveBeenCalledTimes(1);
     });
 });

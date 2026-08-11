@@ -1,8 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { signal } from '../src/signal.js';
-import { computed } from '../src/computed.js';
-import { effect } from '../src/effect.js';
-import { untrack } from '../src/untrack.js';
+import { signal, computed, effect, untrack } from '../src/index.js';
 
 describe('Untrack Primitives Tests', () => {
     it('returns the result of the function passed to untrack()', () => {
@@ -26,13 +23,11 @@ describe('Untrack Primitives Tests', () => {
 
         expect(effectFn).toHaveBeenCalledTimes(1);
 
-        // Modifying untracked signal should NOT trigger effect
         untrackedSig.set(20);
         await Promise.resolve();
         await new Promise((r) => setTimeout(r, 0));
         expect(effectFn).toHaveBeenCalledTimes(1);
 
-        // Modifying tracked signal SHOULD trigger effect
         trackedSig.set(2);
         await Promise.resolve();
         await new Promise((r) => setTimeout(r, 0));
@@ -49,11 +44,9 @@ describe('Untrack Primitives Tests', () => {
 
         expect(c.value).toBe('ab');
 
-        // Changing untracked signal should NOT trigger re-evaluation
         untrackedSig.set('z');
         expect(c.value).toBe('ab');
 
-        // Changing tracked signal SHOULD trigger re-evaluation
         trackedSig.set('x');
         expect(c.value).toBe('xz');
     });

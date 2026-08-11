@@ -20,7 +20,9 @@ export class Owner {
         this.cleanups = [];
 
         for (const node of this.resources) {
-            node.dispose();
+            if (typeof node.dispose === 'function') {
+                node.dispose();
+            }
         }
         this.resources.clear();
     }

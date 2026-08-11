@@ -1,13 +1,14 @@
-import { cleanup } from "./cleanup.js";
-import { addFlag, NodeFlags, NodeKind, hasFlag } from "./core/flags.js";
-import { Node, type EffectFn, type Observer, type Source } from "./core/node.js";
-import { currentObserver } from "./core/tracking.js";
+import { cleanup } from "../core/cleanup.js";
+import { addFlag, hasFlag, NodeFlags, NodeKind } from "../core/flags.js";
+import { Node, type EffectFn, type Observer, type Source } from "../core/node.js";
+import { currentObserver } from "../core/tracking.js";
 import { currentOwner } from "./owner.js";
 
 export class Effect extends Node implements Observer {
   sources = new Set<Source>();
   private fn: EffectFn;
   private cleanupFn?: (() => void) | undefined;
+
   constructor(fn: EffectFn) {
     super(NodeKind.EFFECT);
     this.fn = fn;

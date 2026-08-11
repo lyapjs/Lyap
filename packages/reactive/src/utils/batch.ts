@@ -1,8 +1,8 @@
-import { flushJobs } from "./scheduler.js";
+import { flushJobs } from "../core/scheduler.js";
 
 export let batchDepth = 0;
 
-export function batch<T>(fn: () => T): T{
+export function batch<T>(fn: () => T): T {
     batchDepth++;
     try {
         return fn();

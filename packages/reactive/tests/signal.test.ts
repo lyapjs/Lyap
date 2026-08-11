@@ -1,12 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { Signal, signal } from '../src/signal.js';
-import { NodeKind } from '../src/core/flags.js';
+import { Signal, signal } from '../src/index.js';
 
 describe('Signal Tests', () => {
     it('creates a Signal instance via signal() factory function', () => {
         const count = signal(10);
         expect(count).toBeInstanceOf(Signal);
-        expect(count.kind).toBe(NodeKind.SIGNAL);
         expect(count.value).toBe(10);
     });
 

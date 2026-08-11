@@ -1,7 +1,7 @@
-import { NodeKind } from "./core/flags.js";
-import { Node, type Observer, type Source } from "./core/node.js";
-import { currentObserver } from "./core/tracking.js";
-import { notify, NotifyType } from "./notify.js";
+import { NodeKind } from "../core/flags.js";
+import { Node, type Observer, type Source } from "../core/node.js";
+import { currentObserver } from "../core/tracking.js";
+import { notify, NotifyType } from "../core/notify.js";
 
 export class Signal<T> extends Node implements Source {
   private _value: T;

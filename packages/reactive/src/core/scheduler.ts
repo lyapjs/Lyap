@@ -1,6 +1,6 @@
-import type { Effect } from "./effect.js";
+import type { Effect } from "../primitives/effect.js";
 
-export type JobQueue = Set<Effect>
+export type JobQueue = Set<Effect>;
 
 export const jobQueue: JobQueue = new Set();
 

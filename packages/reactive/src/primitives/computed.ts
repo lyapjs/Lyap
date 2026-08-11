@@ -1,8 +1,8 @@
-import { cleanup } from "./cleanup.js";
-import { addFlag, hasFlag, NodeFlags, NodeKind, removeFlag } from "./core/flags.js";
-import { Node, type ComputedFn, type Observer, type Source } from "./core/node.js";
-import { currentObserver } from "./core/tracking.js";
-import { notify, NotifyType } from "./notify.js";
+import { cleanup } from "../core/cleanup.js";
+import { addFlag, hasFlag, NodeFlags, NodeKind, removeFlag } from "../core/flags.js";
+import { Node, type ComputedFn, type Observer, type Source } from "../core/node.js";
+import { currentObserver } from "../core/tracking.js";
+import { notify, NotifyType } from "../core/notify.js";
 import { currentOwner } from "./owner.js";
 
 export class Computed<T> extends Node implements Source, Observer {
@@ -83,7 +83,7 @@ export class Computed<T> extends Node implements Source, Observer {
 
     markDirty() {
         if (hasFlag(this, NodeFlags.DIRTY)) return;
-        addFlag(this, NodeFlags.DIRTY)
+        addFlag(this, NodeFlags.DIRTY);
         notify(this.observers, NotifyType.PENDING);
     }
 
