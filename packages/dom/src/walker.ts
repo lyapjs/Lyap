@@ -1,0 +1,123 @@
+import { createScope, ScopeContext, getScope } from './scope.js';
+import { parseLyapScript } from './script-parser.js';
+import { handleCloak } from './directives/cloak.js';
+import { handleText } from './directives/text.js';
+import { handleShow } from './directives/show.js';
+import { handleClass } from './directives/class.js';
+import { handleAttr } from './directives/attr.js';
+import { handleOn } from './directives/on.js';
+import { handleBind } from './directives/bind.js';
+import { handleIf } from './directives/if.js';
+import { handleFor } from './directives/for.js';
+import { handleRef } from './directives/ref.js';
+
+export function walkTree(root: Node, parentScopeCtx?: ScopeContext): void {
+  if (root.nodeType !== 1) return; // Only Element nodes
+
+  const element = root as Element;
+  let currentScope = parentScopeCtx || getScope(element);
+
+  // 1. Check for DIRECT child <script type="lyap"> tags inside element
+  const directChildScripts = Array.from(element.children).filter(
+    (child) => child.tagName === 'SCRIPT' && child.getAttribute('type') === 'lyap'
+  );
+
+  if (directChildScripts.length > 0) {
+    let combinedState: Record<string, any> = {};
+    let combinedDerived: Record<string, any> = {};
+    let initHooks: Array<() => void> = [];
+    let mountHooks: Array<() => void> = [];
+    let destroyHooks: Array<() => void> = [];
+
+    directChildScripts.forEach((script) => {
+      const parsed = parseLyapScript(script.textContent || '', element);
+
+      // State key collision check
+      for (const k of Object.keys(parsed.state)) {
+        if (k in combinedState) {
+          console.warn(`[Lyap Guard Warning] State key collision: "${k}" already declared in container scope.`);
+        }
+      }
+
+      Object.assign(combinedState, parsed.state);
+      Object.assign(combinedDerived, parsed.derived);
+      initHooks.push(...parsed.initHooks);
+      mountHooks.push(...parsed.mountHooks);
+      destroyHooks.push(...parsed.destroyHooks);
+    });
+
+    currentScope = createScope(element, combinedState, parentScopeCtx);
+    currentScope.destroyHooks.push(...destroyHooks);
+    currentScope.mountHooks.push(...mountHooks);
+
+    // Trigger init hooks
+    initHooks.forEach((fn) => {
+      try { fn.call(currentScope!.state); } catch (e) { console.error(e); }
+    });
+  }
+
+  // Ensure fallback scope context exists
+  if (!currentScope) {
+    currentScope = createScope(element, {}, parentScopeCtx);
+  }
+
+  // 2. Un-cloak node
+  handleCloak(element);
+
+  // 3. Process ly-ref
+  if (element.hasAttribute('ly-ref')) {
+    handleRef(element, element.getAttribute('ly-ref')!, currentScope);
+  }
+
+  // 4. Process Structural Directives (ly-if & ly-for)
+  if (element.tagName === 'TEMPLATE') {
+    const templateEl = element as HTMLTemplateElement;
+    if (templateEl.hasAttribute('ly-if')) {
+      handleIf(templateEl, templateEl.getAttribute('ly-if')!, currentScope);
+      return;
+    }
+    if (templateEl.hasAttribute('ly-for')) {
+      handleFor(templateEl, templateEl.getAttribute('ly-for')!, currentScope);
+      return;
+    }
+  }
+
+  // 5. Process Directive Attributes
+  const attributes = Array.from(element.attributes);
+  for (const attr of attributes) {
+    const { name, value } = attr;
+
+    if (name === 'ly-text') {
+      handleText(element, value, currentScope);
+    } else if (name === 'ly-show') {
+      handleShow(element as HTMLElement, value, currentScope);
+    } else if (name === 'ly-class') {
+      handleClass(element, value, currentScope);
+    } else if (name.startsWith('ly-bind')) {
+      const modifierStr = name.slice('ly-bind'.length); // e.g. ".trim" or ""
+      const fullProp = value ? value + modifierStr : name.slice('ly-bind.'.length);
+      handleBind(element, fullProp, currentScope);
+    } else if (name.startsWith('ly-attr:')) {
+      const targetAttr = name.slice('ly-attr:'.length);
+      handleAttr(element, targetAttr, value, currentScope);
+    } else if (name.startsWith('ly-on:')) {
+      const rawEventName = name.slice('ly-on:'.length);
+      handleOn(element, rawEventName, value, currentScope);
+    }
+  }
+
+  // 6. Recursively Walk Children (excluding script tags)
+  Array.from(element.children).forEach((child) => {
+    if (child.tagName !== 'SCRIPT') {
+      walkTree(child, currentScope);
+    }
+  });
+
+  // 7. Trigger mount hooks
+  if (currentScope.mountHooks.length > 0) {
+    currentScope.mountHooks.forEach((fn) => {
+      try { fn.call(currentScope!.state); } catch (e) { console.error(e); }
+    });
+    currentScope.mountHooks = []; // Ensure mount runs once
+  }
+}
