@@ -106,9 +106,9 @@ export function walkTree(root: Node, parentScopeCtx?: ScopeContext): void {
     }
   }
 
-  // 6. Recursively Walk Children (excluding script tags)
+  // 6. Recursively Walk Children (excluding script tags & already-processed loop items)
   Array.from(element.children).forEach((child) => {
-    if (child.tagName !== 'SCRIPT') {
+    if (child.tagName !== 'SCRIPT' && !(child as any).__lyap_processed) {
       walkTree(child, currentScope);
     }
   });

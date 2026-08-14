@@ -86,6 +86,23 @@ describe('Watch Reactive Utility Tests', () => {
         expect(cb).toHaveBeenCalledWith(10, 4);
     });
 
+    it('snapshots oldValue for object sources', async () => {
+        const user = signal({ name: 'Alice' });
+        const cb = vi.fn();
+        watch(user, cb);
+
+        const original = user.value;
+        user.set({ name: 'Bob' });
+        await Promise.resolve();
+        await new Promise((r) => setTimeout(r, 0));
+
+        expect(cb).toHaveBeenCalledTimes(1);
+        const [newVal, oldVal] = cb.mock.calls[0] as [any, any];
+        expect(newVal).toEqual({ name: 'Bob' });
+        expect(oldVal).toEqual({ name: 'Alice' });
+        expect(oldVal).not.toBe(original);
+    });
+
     it('stops watching when returned unwatch disposer is called', async () => {
         const count = signal(0);
         const cb = vi.fn();

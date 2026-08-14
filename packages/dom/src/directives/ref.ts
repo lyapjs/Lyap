@@ -4,5 +4,10 @@ export function handleRef(element: Element, refName: string, scopeCtx: ScopeCont
   const name = refName.trim();
   if (name) {
     scopeCtx.refs[name] = element;
+    scopeCtx.destroyHooks.push(() => {
+      if (scopeCtx.refs[name] === element) {
+        delete scopeCtx.refs[name];
+      }
+    });
   }
 }

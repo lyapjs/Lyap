@@ -78,6 +78,36 @@ describe('Reactive Store Tests', () => {
     expect(list[3]).toBe(4);
   });
 
+  it('notifies length-tracked effects on sort, reverse and index assignment', async () => {
+    const list = store([3, 1, 2]);
+    let runs = 0;
+
+    const e = effect(() => {
+      runs++;
+      list.length;
+    });
+    e.runEffect();
+    expect(runs).toBe(1);
+
+    // sort() does not change length — must still notify via the content-version signal.
+    list.sort((a, b) => a - b);
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(runs).toBe(2);
+    expect(Array.from(list)).toEqual([1, 2, 3]);
+
+    list.reverse();
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(runs).toBe(3);
+
+    list[0] = 99;
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(runs).toBe(4);
+    expect(list[0]).toBe(99);
+  });
+
   it('provides isStore and toRaw helpers', () => {
     const rawObj = { a: 1 };
     const sObj = store(rawObj);

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live REPL Playground — LyapJs Documentation</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="./lyap.min.js"></script>
+  <style>
+    .repl-editor {
+      width: 100%;
+      height: 260px;
+      background-color: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      padding: 1rem;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      outline: none;
+      resize: vertical;
+      margin-bottom: 1rem;
+    }
+    .repl-output-box {
+      background-color: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      padding: 1.5rem;
+      min-height: 120px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Reading Progress Bar (React/Next.js Style) -->
+  <div class="top-progress-bar" id="top-progress-bar"></div>
+
+  <!-- Root App Scope -->
+  <div style="display: contents;">
+    <script type="lyap">
+      state({
+        isNavOpen: false,
+        code: '<div>\n  <script type="lyap">\n    state({ count: 0 });\n  <\/script>\n\n  <h3>Count: <span ly-text="count"></span></h3>\n  <button class="footer-nav-btn" ly-on:click="count++">Increment</button>\n</div>'
+      });
+
+      function runSandbox() {
+        const output = document.getElementById('sandbox-render');
+        if (output && window.Lyap) {
+          output.innerHTML = code;
+          window.Lyap.walk(output);
+        }
+      }
+    </script>
+
+    <!-- Header Navigation -->
+    <header class="topnav">
+      <a href="./index.html" class="brand-container">
+        <span class="brand-logo">⚡</span>
+        <span class="brand-name">LyapJs</span>
+        <span class="brand-badge">v1.0.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="./getting-started.html" class="nav-link">Documentation</a>
+        <a href="./directives.html" class="nav-link">Directives</a>
+        <a href="./playground.html" class="nav-link active">Playground</a>
+        <a href="https://github.com" target="_blank" class="nav-link">GitHub</a>
+        
+        <!-- Theme Toggle Button (No Emojis) -->
+        <button id="theme-btn" class="theme-toggle-btn" onclick="toggleTheme()">Theme: Dark</button>
+      </nav>
+
+      <button class="mobile-btn" ly-on:click="isNavOpen = !isNavOpen">☰</button>
+    </header>
+
+    <!-- Layout Wrapper -->
+    <div class="layout-wrapper">
+
+      <!-- Left Sidebar -->
+      <aside class="sidebar" ly-class=":isNavOpen mobile-open">
+        <div class="sidebar-category">Overview</div>
+        <a href="./index.html" class="sidebar-link">Introduction</a>
+
+        <div class="sidebar-category">Getting Started</div>
+        <a href="./getting-started.html" class="sidebar-link">Quick Start Guide</a>
+        <a href="./core-concepts.html" class="sidebar-link">Core Architecture</a>
+
+        <div class="sidebar-category">Directives &amp; APIs</div>
+        <a href="./directives.html" class="sidebar-link">Directives Reference</a>
+        <a href="./script-tags.html" class="sidebar-link">Script State Tags</a>
+        <a href="./magic-variables.html" class="sidebar-link">Magic Variables ($*)</a>
+
+        <div class="sidebar-category">Tooling</div>
+        <a href="./playground.html" class="sidebar-link active">Live REPL Playground</a>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="doc-main" ly-on:click="if (isNavOpen) isNavOpen = false;">
+
+        <div class="page-header">
+          <h1 class="page-title">Live REPL Playground</h1>
+          <p class="page-subtitle">
+            Test declarative LyapJs HTML components in real-time.
+          </p>
+        </div>
+
+        <div id="playground-app">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 class="doc-h2" style="margin: 0;">Interactive HTML Code Editor</h2>
+            <button class="footer-nav-btn" style="background: rgba(56, 189, 248, 0.15); color: var(--accent); border-color: rgba(56, 189, 248, 0.3);" ly-on:click="runSandbox">Execute Sandbox</button>
+          </div>
+
+          <textarea class="repl-editor" ly-bind="code"></textarea>
+
+          <h2 class="doc-h2">Render Output</h2>
+          <div class="repl-output-box" id="sandbox-render">
+            <div>
+              <script type="lyap">
+                state({ count: 0 });
+              </script>
+              <h3>Count: <span ly-text="count"></span></h3>
+              <button class="footer-nav-btn" ly-on:click="count++">Increment</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Footer -->
+        <div class="doc-footer-nav">
+          <a href="./magic-variables.html" class="footer-nav-btn">
+            <span>Previous</span>
+            <strong>&larr; Magic Variables ($*)</strong>
+          </a>
+          <span></span>
+        </div>
+
+      </main>
+
+      <!-- React / Next.js Style Right Sidebar (On Large Displays) -->
+      <aside class="right-progress-sidebar">
+        <div class="toc-nav-title">ON THIS PAGE</div>
+        <div class="progress-counter" id="progress-val">0% Read</div>
+        <nav class="toc-list">
+          <a href="#playground-app" class="toc-link-item">HTML REPL Editor</a>
+          <a href="#sandbox-render" class="toc-link-item">Render Output</a>
+        </nav>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-theme');
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = isLight ? 'Theme: Light' : 'Theme: Dark';
+    }
+
+    function updateScrollProgress() {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
+      const bar = document.getElementById('top-progress-bar');
+      if (bar) bar.style.width = progress + '%';
+      const counter = document.getElementById('progress-val');
+      if (counter) counter.textContent = Math.round(progress) + '% Read';
+    }
+
+    window.addEventListener('scroll', updateScrollProgress);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateScrollProgress();
+      if (window.Lyap && typeof window.Lyap.walk === 'function') {
+        window.Lyap.walk(document.body);
+      }
+    });
+  </script>
+
+</body>
+</html>

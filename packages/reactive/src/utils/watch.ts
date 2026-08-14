@@ -3,6 +3,12 @@ import { Computed } from "../primitives/computed.js";
 import { effect } from "../primitives/effect.js";
 import { untrack } from "./untrack.js";
 
+function snapshot(value: any): any {
+    if (Array.isArray(value)) return [...value];
+    if (value !== null && typeof value === 'object') return { ...value };
+    return value;
+}
+
 export type WatchSource<T = any> = Signal<T> | Computed<T> | (() => T);
 
 export interface WatchOptions {
@@ -26,7 +32,7 @@ export function watch<T>(
 
         if (isFirstRun) {
             isFirstRun = false;
-            oldValue = Array.isArray(newValue) ? [...newValue] : newValue;
+            oldValue = snapshot(newValue);
             if (options.immediate) {
                 untrack(() => cb(newValue, undefined));
             }
@@ -34,7 +40,7 @@ export function watch<T>(
         }
 
         const prev = oldValue;
-        oldValue = Array.isArray(newValue) ? [...newValue] : newValue;
+        oldValue = snapshot(newValue);
 
         untrack(() => cb(newValue, prev));
     });

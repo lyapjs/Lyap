@@ -7,14 +7,17 @@ export interface ScopeContext {
   refs: Record<string, Element>;
   destroyHooks: Array<() => void>;
   mountHooks: Array<() => void>;
+  children: Set<ScopeContext>;
 }
 
 const elementScopeMap = new WeakMap<Element, ScopeContext>();
 
-export function createScope(element: Element, initialState: Record<string, any> = {}, parent?: ScopeContext): ScopeContext {
+export function createScope(element: Element, initialState: Record<string, any> = {}, parent?: ScopeContext, trackChild: boolean = true): ScopeContext {
   const parentState = parent ? parent.state : {};
 
-  // Prototypal scope inheritance: child inherits parent state/derived/actions
+  // Prototypal scope inheritance: fall through to the PARENT's reactive store
+  // (not its raw target) so reads of inherited primitives track the parent's
+  // signal and stay reactive.
   const scopeState = Object.create(parentState);
   Object.assign(scopeState, initialState);
 
@@ -27,8 +30,13 @@ export function createScope(element: Element, initialState: Record<string, any> 
     parent,
     refs: parent ? parent.refs : {},
     destroyHooks: [],
-    mountHooks: []
+    mountHooks: [],
+    children: new Set<ScopeContext>()
   };
+
+  if (parent && trackChild) {
+    parent.children.add(scopeCtx);
+  }
 
   elementScopeMap.set(element, scopeCtx);
   return scopeCtx;
@@ -47,6 +55,31 @@ export function getScope(element: Element): ScopeContext | undefined {
 
 export function setScopeForElement(element: Element, scope: ScopeContext): void {
   elementScopeMap.set(element, scope);
+}
+
+export function destroyScope(scopeCtx: ScopeContext): void {
+  if (scopeCtx.parent) {
+    scopeCtx.parent.children.delete(scopeCtx);
+  }
+
+  // Destroy nested scopes first.
+  for (const child of Array.from(scopeCtx.children)) {
+    destroyScope(child);
+  }
+  scopeCtx.children.clear();
+
+  // Run teardown hooks (listeners, structural-directive disposers) in reverse.
+  for (let i = scopeCtx.destroyHooks.length - 1; i >= 0; i--) {
+    try {
+      scopeCtx.destroyHooks[i]();
+    } catch (err) {
+      console.error('[Lyap] Error during scope teardown:', err);
+    }
+  }
+  scopeCtx.destroyHooks = [];
+  scopeCtx.mountHooks = [];
+
+  elementScopeMap.delete(scopeCtx.element);
 }
 
 export function createFormAssistant(formElement: Element, scopeCtx: ScopeContext) {

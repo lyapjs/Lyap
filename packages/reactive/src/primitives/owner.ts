@@ -41,6 +41,7 @@ export class Owner {
 export function scope(fn: () => void) {
     const owner = new Owner(fn);
     currentOwner?.resources.add(owner);
+    owner.run();
     return owner;
 }
 

@@ -58,6 +58,7 @@ export function handleOn(element: Element, rawEventName: string, expression: str
   // Target selection based on modifiers
   if (modifiers.has('window')) {
     window.addEventListener(eventName, listener, { once: modifiers.has('once') });
+    scopeCtx.destroyHooks.push(() => window.removeEventListener(eventName, listener));
   } else if (modifiers.has('outside')) {
     const outsideListener = (event: Event) => {
       if (!element.contains(event.target as Node)) {
@@ -70,5 +71,6 @@ export function handleOn(element: Element, rawEventName: string, expression: str
     });
   } else {
     element.addEventListener(eventName, listener, { once: modifiers.has('once') });
+    scopeCtx.destroyHooks.push(() => element.removeEventListener(eventName, listener));
   }
 }

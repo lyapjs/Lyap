@@ -17,13 +17,13 @@ export function handleBind(element: Element, rawPropName: string, scopeCtx: Scop
   }
 
   let isComposing = false;
-  inputEl.addEventListener('compositionstart', () => {
+  const onComposeStart = () => {
     isComposing = true;
-  });
-  inputEl.addEventListener('compositionend', () => {
+  };
+  const onComposeEnd = () => {
     isComposing = false;
     updateStateFromInput();
-  });
+  };
 
   let debounceTimer: any = null;
 
@@ -74,10 +74,12 @@ export function handleBind(element: Element, rawPropName: string, scopeCtx: Scop
     }
   };
 
+  inputEl.addEventListener('compositionstart', onComposeStart);
+  inputEl.addEventListener('compositionend', onComposeEnd);
   inputEl.addEventListener('input', updateStateFromInput);
   inputEl.addEventListener('change', updateStateFromInput);
 
-  effect(() => {
+  const e = effect(() => {
     const val = evaluateExpression(propName, {
       scope: scopeCtx.state,
       element,
@@ -99,5 +101,16 @@ export function handleBind(element: Element, rawPropName: string, scopeCtx: Scop
         inputEl.value = val !== undefined && val !== null ? String(val) : '';
       }
     }
-  }).runEffect();
+  });
+
+  scopeCtx.destroyHooks.push(() => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    inputEl.removeEventListener('compositionstart', onComposeStart);
+    inputEl.removeEventListener('compositionend', onComposeEnd);
+    inputEl.removeEventListener('input', updateStateFromInput);
+    inputEl.removeEventListener('change', updateStateFromInput);
+    e.dispose();
+  });
+
+  e.runEffect();
 }

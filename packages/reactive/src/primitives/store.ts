@@ -1,6 +1,9 @@
 import { Signal, signal } from './signal.js';
+import { currentObserver } from '../core/tracking.js';
+import { untrack } from '../utils/untrack.js';
 
 const STORE_RAW = Symbol('STORE_RAW');
+const ARRAY_VERSION = Symbol('ARRAY_VERSION');
 const proxyMap = new WeakMap<object, any>();
 const rawMap = new WeakMap<object, object>();
 
@@ -43,9 +46,16 @@ export function store<T extends object>(initialTarget: T): T {
 
       const val = Reflect.get(target, prop, receiver);
 
-      if (typeof prop !== 'symbol' || prop === Symbol.iterator) {
+      if (currentObserver.length > 0 && (typeof prop !== 'symbol' || prop === Symbol.iterator)) {
         const sig = getSignal(prop, val);
         sig.value;
+
+        // Arrays: also track a content-version signal when their length or
+        // iterator is observed, so in-place mutation (push/pop/sort/reverse/...)
+        // invalidates dependents that only read the collection reference.
+        if (Array.isArray(target) && (prop === 'length' || prop === Symbol.iterator)) {
+          getSignal(ARRAY_VERSION, 0).value;
+        }
       }
 
       if (typeof val === 'object' && val !== null && !(val instanceof Date) && !(val instanceof RegExp)) {
@@ -56,11 +66,13 @@ export function store<T extends object>(initialTarget: T): T {
         if (['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].includes(prop as string)) {
           return function (...args: any[]) {
             const res = (Array.prototype as any)[prop].apply(target, args);
-            for (const [p, sig] of signalMap.entries()) {
-              sig.set((target as any)[p]);
-            }
             const lengthSig = signalMap.get('length');
             if (lengthSig) lengthSig.set(target.length);
+            const versionSig = signalMap.get(ARRAY_VERSION);
+            if (versionSig) {
+              const current = untrack(() => versionSig.value as number);
+              versionSig.set(current + 1);
+            }
             return res;
           };
         }
@@ -86,6 +98,13 @@ export function store<T extends object>(initialTarget: T): T {
           const lengthSig = signalMap.get('length');
           if (lengthSig) lengthSig.set(target.length);
         }
+        if (Array.isArray(target)) {
+          const versionSig = signalMap.get(ARRAY_VERSION);
+          if (versionSig) {
+            const current = untrack(() => versionSig.value as number);
+            versionSig.set(current + 1);
+          }
+        }
       }
 
       return result;
@@ -100,19 +119,30 @@ export function store<T extends object>(initialTarget: T): T {
           sig.set(undefined);
         }
         signalMap.delete(prop);
+        if (Array.isArray(target)) {
+          const versionSig = signalMap.get(ARRAY_VERSION);
+          if (versionSig) {
+            const current = untrack(() => versionSig.value as number);
+            versionSig.set(current + 1);
+          }
+        }
       }
       return result;
     },
 
     has(target, prop) {
-      const sig = getSignal(prop, Reflect.get(target, prop));
-      sig.value;
+      if (currentObserver.length > 0) {
+        const sig = getSignal(prop, Reflect.get(target, prop));
+        sig.value;
+      }
       return Reflect.has(target, prop);
     },
 
     ownKeys(target) {
-      const lengthSig = getSignal(Array.isArray(target) ? 'length' : 'keys', null);
-      lengthSig.value;
+      if (currentObserver.length > 0) {
+        const lengthSig = getSignal(Array.isArray(target) ? 'length' : 'keys', null);
+        lengthSig.value;
+      }
       return Reflect.ownKeys(target);
     }
   });

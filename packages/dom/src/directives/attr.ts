@@ -3,7 +3,7 @@ import { evaluateExpression } from '../evaluator.js';
 import { ScopeContext } from '../scope.js';
 
 export function handleAttr(element: Element, attrName: string, expression: string, scopeCtx: ScopeContext): void {
-  effect(() => {
+  const e = effect(() => {
     const val = evaluateExpression(expression, {
       scope: scopeCtx.state,
       element,
@@ -17,5 +17,7 @@ export function handleAttr(element: Element, attrName: string, expression: strin
     } else {
       element.setAttribute(attrName, String(val));
     }
-  }).runEffect();
+  });
+  scopeCtx.destroyHooks.push(() => e.dispose());
+  e.runEffect();
 }

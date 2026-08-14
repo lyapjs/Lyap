@@ -5,7 +5,7 @@ import { ScopeContext } from '../scope.js';
 export function handleShow(element: HTMLElement, expression: string, scopeCtx: ScopeContext): void {
   const originalDisplay = element.style.display === 'none' ? '' : element.style.display;
 
-  effect(() => {
+  const e = effect(() => {
     const isVisible = Boolean(
       evaluateExpression(expression, {
         scope: scopeCtx.state,
@@ -19,5 +19,7 @@ export function handleShow(element: HTMLElement, expression: string, scopeCtx: S
     } else {
       element.style.display = 'none';
     }
-  }).runEffect();
+  });
+  scopeCtx.destroyHooks.push(() => e.dispose());
+  e.runEffect();
 }

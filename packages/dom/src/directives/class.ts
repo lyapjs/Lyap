@@ -5,7 +5,7 @@ import { ScopeContext } from '../scope.js';
 export function handleClass(element: Element, expression: string, scopeCtx: ScopeContext): void {
   const initialStaticClasses = Array.from(element.classList);
 
-  effect(() => {
+  const e = effect(() => {
     const raw = expression.trim();
     if (!raw) return;
 
@@ -70,5 +70,7 @@ export function handleClass(element: Element, expression: string, scopeCtx: Scop
     } else {
       element.removeAttribute('class');
     }
-  }).runEffect();
+  });
+  scopeCtx.destroyHooks.push(() => e.dispose());
+  e.runEffect();
 }

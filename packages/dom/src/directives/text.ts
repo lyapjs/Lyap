@@ -3,12 +3,14 @@ import { evaluateExpression } from '../evaluator.js';
 import { ScopeContext } from '../scope.js';
 
 export function handleText(element: Element, expression: string, scopeCtx: ScopeContext): void {
-  effect(() => {
+  const e = effect(() => {
     const val = evaluateExpression(expression, {
       scope: scopeCtx.state,
       element,
       refs: scopeCtx.refs
     });
     element.textContent = val !== undefined && val !== null ? String(val) : '';
-  }).runEffect();
+  });
+  scopeCtx.destroyHooks.push(() => e.dispose());
+  e.runEffect();
 }

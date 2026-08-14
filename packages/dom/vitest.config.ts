@@ -4,7 +4,7 @@ import path from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@lyapjs/reactive': path.resolve(__dirname, '../reactive/src/index.ts')
+      '@lyapjs/reactive': path.resolve(import.meta.dirname, '../reactive/src/index.ts')
     }
   },
   test: {

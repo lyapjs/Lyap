@@ -16,7 +16,6 @@ describe('Owner & Scope Lifecycle Tests', () => {
                 count.value;
             });
         });
-        owner.run();
 
         expect(owner.resources.size).toBe(1);
         expect(owner.resources.has(eff)).toBe(true);
@@ -29,7 +28,6 @@ describe('Owner & Scope Lifecycle Tests', () => {
         const owner = scope(() => {
             comp = computed(() => count.value * 2);
         });
-        owner.run();
 
         expect(owner.resources.size).toBe(1);
         expect(owner.resources.has(comp)).toBe(true);
@@ -44,7 +42,6 @@ describe('Owner & Scope Lifecycle Tests', () => {
                 count.value;
             });
         });
-        owner.run();
 
         eff!.runEffect();
         expect(count.observers.has(eff!)).toBe(true);

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Script State Tags — LyapJs Documentation</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="./lyap.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Reading Progress Bar (React/Next.js Style) -->
+  <div class="top-progress-bar" id="top-progress-bar"></div>
+
+  <!-- Root App Scope for Mobile Navigation Toggle -->
+  <div style="display: contents;">
+    <script type="lyap">
+      state({ isNavOpen: false });
+    </script>
+
+    <!-- Header Navigation -->
+    <header class="topnav">
+      <a href="./index.html" class="brand-container">
+        <span class="brand-logo">⚡</span>
+        <span class="brand-name">LyapJs</span>
+        <span class="brand-badge">v1.0.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="./getting-started.html" class="nav-link active">Documentation</a>
+        <a href="./directives.html" class="nav-link">Directives</a>
+        <a href="./playground.html" class="nav-link">Playground</a>
+        <a href="https://github.com" target="_blank" class="nav-link">GitHub</a>
+        
+        <!-- Theme Toggle Button (No Emojis) -->
+        <button id="theme-btn" class="theme-toggle-btn" onclick="toggleTheme()">Theme: Dark</button>
+      </nav>
+
+      <button class="mobile-btn" ly-on:click="isNavOpen = !isNavOpen">☰</button>
+    </header>
+
+    <!-- Layout Wrapper -->
+    <div class="layout-wrapper">
+
+      <!-- Left Sidebar -->
+      <aside class="sidebar" ly-class=":isNavOpen mobile-open">
+        <div class="sidebar-category">Overview</div>
+        <a href="./index.html" class="sidebar-link">Introduction</a>
+
+        <div class="sidebar-category">Getting Started</div>
+        <a href="./getting-started.html" class="sidebar-link">Quick Start Guide</a>
+        <a href="./core-concepts.html" class="sidebar-link">Core Architecture</a>
+
+        <div class="sidebar-category">Directives &amp; APIs</div>
+        <a href="./directives.html" class="sidebar-link">Directives Reference</a>
+        <a href="./script-tags.html" class="sidebar-link active">Script State Tags</a>
+        <a href="./magic-variables.html" class="sidebar-link">Magic Variables ($*)</a>
+
+        <div class="sidebar-category">Tooling</div>
+        <a href="./playground.html" class="sidebar-link">Live REPL Playground</a>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="doc-main" ly-on:click="if (isNavOpen) isNavOpen = false;">
+
+        <div class="page-header">
+          <h1 class="page-title">Script State Tags (`&lt;script type="lyap"&gt;`)</h1>
+          <p class="page-subtitle">
+            Declare state properties, derived values, actions, and lifecycle hooks inside HTML script tags.
+          </p>
+        </div>
+
+        <h2 class="doc-h2" id="state">1. State Declaration (`state()`)</h2>
+        <p class="doc-p">Initializes reactive properties wrapped in store proxies:</p>
+
+        <div class="code-box">
+          <button class="btn-copy" onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); this.textContent='Copied'; setTimeout(()=>this.textContent='Copy', 1500)">Copy</button>
+          <pre><code><span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"lyap"</span><span class="tag">&gt;</span>
+  <span class="kw">state</span>({
+    count: 0,
+    user: { name: <span class="str">'Ada'</span> }
+  });
+<span class="tag">&lt;/script&gt;</span></code></pre>
+        </div>
+
+        <h2 class="doc-h2" id="derived">2. Derived Computed State (`derived()`)</h2>
+        <p class="doc-p">Declares memoized read-only computed values that update when dependencies change:</p>
+
+        <div class="code-box">
+          <button class="btn-copy" onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); this.textContent='Copied'; setTimeout(()=>this.textContent='Copy', 1500)">Copy</button>
+          <pre><code><span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"lyap"</span><span class="tag">&gt;</span>
+  <span class="kw">state</span>({ count: 10 });
+
+  <span class="kw">derived</span>({
+    doubleCount() {
+      <span class="kw">return</span> count * 2;
+    }
+  });
+<span class="tag">&lt;/script&gt;</span></code></pre>
+        </div>
+
+        <h2 class="doc-h2" id="lifecycle">3. Component Lifecycle Hooks</h2>
+        <p class="doc-p">LyapJs provides 4 lifecycle hooks to manage scope lifecycle events:</p>
+
+        <div class="grid-cards">
+          <div class="feature-card">
+            <div class="feature-title">init(() => { ... })</div>
+            <div class="feature-desc">Executed during initial scope creation before directive walking.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-title">mount(() => { ... })</div>
+            <div class="feature-desc">Executed immediately after element &amp; scope attach to the DOM.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-title">cleanup(() => { ... })</div>
+            <div class="feature-desc">Registered inside <code>mount()</code> to clean up timers and listeners.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-title">destroy(() => { ... })</div>
+            <div class="feature-desc">Executed when the container element and scope are destroyed.</div>
+          </div>
+        </div>
+
+        <!-- Page Footer -->
+        <div class="doc-footer-nav">
+          <a href="./directives.html" class="footer-nav-btn">
+            <span>Previous</span>
+            <strong>&larr; Directives Reference</strong>
+          </a>
+          <a href="./magic-variables.html" class="footer-nav-btn">
+            <span>Next</span>
+            <strong>Magic Variables ($*) &rarr;</strong>
+          </a>
+        </div>
+
+      </main>
+
+      <!-- React / Next.js Style Right Sidebar (On Large Displays) -->
+      <aside class="right-progress-sidebar">
+        <div class="toc-nav-title">ON THIS PAGE</div>
+        <div class="progress-counter" id="progress-val">0% Read</div>
+        <nav class="toc-list">
+          <a href="#state" class="toc-link-item">1. state()</a>
+          <a href="#derived" class="toc-link-item">2. derived()</a>
+          <a href="#lifecycle" class="toc-link-item">3. Lifecycle Hooks</a>
+        </nav>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-theme');
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = isLight ? 'Theme: Light' : 'Theme: Dark';
+    }
+
+    function updateScrollProgress() {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
+      const bar = document.getElementById('top-progress-bar');
+      if (bar) bar.style.width = progress + '%';
+      const counter = document.getElementById('progress-val');
+      if (counter) counter.textContent = Math.round(progress) + '% Read';
+    }
+
+    window.addEventListener('scroll', updateScrollProgress);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateScrollProgress();
+      if (window.Lyap && typeof window.Lyap.walk === 'function') {
+        window.Lyap.walk(document.body);
+      }
+    });
+  </script>
+
+</body>
+</html>

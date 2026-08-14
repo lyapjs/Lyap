@@ -37,7 +37,7 @@ export function handleIf(templateEl: HTMLTemplateElement, expression: string, sc
   let currentElement: Element | null = null;
   let currentDisposeFn: (() => void) | null = null;
 
-  effect(() => {
+  const ifEffect = effect(() => {
     let matchedBranchIndex = -1;
 
     for (let i = 0; i < chain.length; i++) {
@@ -87,5 +87,19 @@ export function handleIf(templateEl: HTMLTemplateElement, expression: string, sc
         currentDisposeFn = () => ownerScope.dispose();
       }
     }
-  }).runEffect();
+  });
+
+  scopeCtx.destroyHooks.push(() => {
+    if (currentDisposeFn) {
+      currentDisposeFn();
+      currentDisposeFn = null;
+    }
+    if (currentElement) {
+      currentElement.remove();
+      currentElement = null;
+    }
+    ifEffect.dispose();
+  });
+
+  ifEffect.runEffect();
 }

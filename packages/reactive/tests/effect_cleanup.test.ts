@@ -58,8 +58,6 @@ describe('Effect Return Cleanup Tests', () => {
             });
         });
 
-        owner.run();
-
         for (const res of owner.resources) {
             if (res instanceof Effect) res.runEffect();
         }
