@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lyap — Lightweight HTML Enhancement Library</title>
-<meta name="description" content="Lyap is a small, fast, no-build HTML enhancement library that adds reactivity to plain HTML. Beginner friendly, CSP safe, zero dependencies.">
+<title>Directive Reference — Lyap</title>
+<meta name="description" content="Every Lyap directive at a glance: ly-text, ly-on, ly-bind, ly-class, ly-attr, ly-show, ly-if and ly-for.">
 <meta name="theme-color" id="meta-theme" content="#ffffff">
 <link rel="icon" href="favicons/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
@@ -25,7 +25,7 @@
 })();
 </script>
 </head>
-<body data-page="index">
+<body data-page="reference">
 <div id="app" ly-cloak>
 
   <header class="navbar">
@@ -40,7 +40,7 @@
       <nav class="nav-links" aria-label="Main">
         <a href="get-started.html">Docs</a>
         <a href="reference.html">Reference</a>
-        <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
+<a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
       <div class="nav-right">
         <div class="theme-toggle" ly-on:click.outside=":themeMenu = false">
@@ -89,111 +89,130 @@
     </aside>
 
     <main class="content">
-      <div class="doc landing">
+      <div class="doc doc-content">
+        <h1 id="directive-reference">Directive Reference</h1>
+<p class="lead">Every directive at a glance. Directives are HTML attributes Lyap recognizes when it walks the DOM.</p>
 
-        <section class="hero">
-          <div class="hero-badges">
-            <span class="badge badge-accent">v<span ly-text="version"></span></span>
-            <span class="badge">No build step</span>
-            <span class="badge">CSP safe</span>
-            <span class="badge">~22&nbsp;KB</span>
-            <span class="badge">Zero dependencies</span>
-          </div>
-          <h1>Reactivity for plain <span class="grad">HTML</span>.</h1>
-          <p class="tagline">Lyap is a small, simple, fast HTML enhancement library. Add reactive state, events, forms and loops directly in your markup — no build step, no framework, no lock-in.</p>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="get-started.html">Get started</a>
-            <a class="btn btn-ghost" href="reference.html">Directive reference</a>
-            <a class="btn btn-ghost" href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-          </div>
-          <div class="hero-warning">
-            <strong>Warning: prototype v2.</strong>
-            This library and site are a prototype built by AI agents. Use with caution — don&rsquo;t rely on it in production yet. A stable beta maintained by the Lyap team is coming soon.
-          </div>
-        </section>
+<h2 id="directives">Directives</h2>
+<table class="doc-table">
+  <thead>
+    <tr><th>Directive</th><th>Purpose</th><th>Example</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>ly-cloak</code></td>
+      <td>Hides a container until Lyap initializes (prevents FOUC).</td>
+      <td><code>&lt;div ly-cloak&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-text</code></td>
+      <td>Sets text content safely — anti-XSS.</td>
+      <td><code>&lt;span ly-text="user.name"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-on:*</code></td>
+      <td>Listens to DOM events. Modifiers: <code>.outside</code>, <code>.self</code>, <code>.prevent</code>, <code>.stop</code>, <code>.once</code>, <code>.window</code>, <code>.enter</code>, <code>.escape</code>. Prefix <code>:</code> for inline expressions.</td>
+      <td><code>ly-on:click.outside=":open = false"</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-bind</code></td>
+      <td>Two-way input binding with IME protection. Modifiers: <code>.trim</code>, <code>.number</code>, <code>.debounce(ms)</code>.</td>
+      <td><code>&lt;input ly-bind.trim="username"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-class</code></td>
+      <td>Dynamic class toggling with <code>:condition class1 class2</code> tokens.</td>
+      <td><code>ly-class=":isActive active"</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-attr:*</code></td>
+      <td>Binds any element attribute dynamically.</td>
+      <td><code>&lt;button ly-attr:disabled="!isValid"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-show</code></td>
+      <td>Toggles CSS visibility (<code>display: none</code>).</td>
+      <td><code>&lt;p ly-show="isOpen"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-if</code> / <code>ly-else-if</code> / <code>ly-else</code></td>
+      <td>Conditional DOM insertion / omission via <code>&lt;template&gt;</code>.</td>
+      <td><code>&lt;template ly-if="isLoggedIn"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-for</code></td>
+      <td>Iterates arrays, numbers or objects with index and key tracking.</td>
+      <td><code>&lt;template ly-for="item in items"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-key</code></td>
+      <td>Stable identity for items rendered by <code>ly-for</code>.</td>
+      <td><code>&lt;div ly-key="item.id"&gt;</code></td>
+    </tr>
+    <tr>
+      <td><code>ly-ref</code></td>
+      <td>Registers a named element reference accessible via <code>$refs</code>.</td>
+      <td><code>&lt;input ly-ref="searchInput"&gt;</code></td>
+    </tr>
+  </tbody>
+</table>
 
-        <div class="example hero-demo">
-          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
-          <div class="example-body">
-            <div>
-                                <script type="lyap">
-                  state({ count: 0 });
+<h2 id="script-api">Lyap script API</h2>
+<p>Inside a <code>&lt;script type="lyap"&gt;</code> block:</p>
+<table class="doc-table">
+  <thead>
+    <tr><th>API</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>state({...})</code></td><td>Declares reactive state properties.</td></tr>
+    <tr><td><code>derived({...})</code></td><td>Declares read-only computed values, lazily memoized and auto-updating.</td></tr>
+    <tr><td><code>init(fn)</code></td><td>Runs during scope creation, before the DOM is live.</td></tr>
+    <tr><td><code>mount(fn)</code></td><td>Runs after the element and scope are attached to the DOM.</td></tr>
+    <tr><td><code>cleanup(fn)</code></td><td>Registers teardown for resources created inside <code>mount()</code>.</td></tr>
+    <tr><td><code>destroy(fn)</code></td><td>Runs when the container scope is destroyed.</td></tr>
+    <tr><td><code>function name() {...}</code></td><td>Declares a callable action with direct access to state.</td></tr>
+  </tbody>
+</table>
 
-                  derived({
-                      doubleCount() {
-                          return count * 2;
-                      }
-                  });
-                </script>
-              <p>Clicked <strong ly-text="count"></strong> times &middot; doubled <strong ly-text="doubleCount"></strong></p>
-              <div class="flex wrap">
-                <button class="btn btn-primary btn-sm" ly-on:click=":count++"> + </button>
-                <button class="btn btn-ghost btn-sm" ly-on:click=":count = 0">Reset</button>
-              </div>
-            </div>
-          </div>
-        </div>
+<h2 id="magic-variables">Magic variables</h2>
+<table class="doc-table">
+  <thead>
+    <tr><th>Variable</th><th>Context</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>$event</code></td><td>Event handlers</td><td>The native DOM event.</td></tr>
+    <tr><td><code>$el</code></td><td>Any directive / callback</td><td>The current element.</td></tr>
+    <tr><td><code>$refs</code></td><td>Whole scope</td><td>Named element reference map.</td></tr>
+    <tr><td><code>$scope</code></td><td>Actions / callbacks</td><td>Container state proxy.</td></tr>
+    <tr><td><code>$form</code></td><td>Form handlers</td><td>Form data, reset, dirty &amp; validity helpers.</td></tr>
+    <tr><td><code>$nextTick</code></td><td>Script functions</td><td>Promise resolving after the reactive flush.</td></tr>
+  </tbody>
+</table>
 
-        <div class="features">
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
-            <h3>No build step</h3>
-            <p>Drop one script tag into any HTML file. No bundler, compiler or server required — it just works.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <h3>100% CSP compliant</h3>
-            <p>Zero <code>eval()</code>, zero <code>new Function()</code>. A safe sandboxed micro-evaluator handles inline expressions.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-            <h3>Fast by design</h3>
-            <p>Small, simple and fast enough that ordinary websites never feel sluggish. Reactive effects are lazy and memoized.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
-            <h3>Declarative</h3>
-            <p>State and logic live in <code>&lt;script type="lyap"&gt;</code> blocks next to your markup. Structure dictates behavior.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
-            <h3>Scoped &amp; inherited</h3>
-            <p>Each container owns its scope. Child containers inherit parent state through prototypal delegation.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
-            <h3>Beginner friendly</h3>
-            <p>Write HTML as usual, then sprinkle <code>ly-</code> directives. Learning Lyap takes minutes, not months.</p>
-          </div>
-        </div>
+<h2 id="global-api">Global API</h2>
+<p>The library exposes itself as <code>Lyap</code> on <code>window</code>:</p>
+<pre class="doc-code" data-title="console"><code class="language-js">Lyap.version            // '2.0.0-proto'
+Lyap.walk(element)      // process a subtree manually
+Lyap.evaluate(expr, ctx) // evaluate a lyap expression
+Lyap.signal(value)      // low-level reactive signal
+Lyap.effect(fn)         // run a reactive effect
+Lyap.store(obj)         // create a reactive store
+Lyap.computed(fn)       // create a computed value</code></pre>
 
-        <h2>Hello, world</h2>
-        <p>State is declared next to the markup it controls. The container below is <em>live</em>:</p>
+<h2 id="notes">Notes</h2>
+<ul>
+  <li><strong>Structural over convenience</strong> — behavior follows HTML structure and scope boundaries.</li>
+  <li><strong>CSP compliant</strong> — no <code>eval()</code>, no <code>new Function()</code> anywhere in the runtime.</li>
+  <li><strong>Guard rails</strong> — duplicate state keys across scripts in one container trigger a console warning.</li>
+  <li><strong>Scope inheritance</strong> — children read parent state through prototypal delegation.</li>
+</ul>
 
-        <div class="example">
-          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
-          <div class="example-body">
-            <div>
-              <script type="lyap">
-                state({ greeting: 'Hello from Lyap!' });
-              </script>
-              <p><span ly-text="greeting"></span></p>
-            </div>
-          </div>
-        </div>
-
-        <pre class="doc-code" data-title="index.html"><code class="language-html">&lt;div&gt;
-    &lt;script type="lyap"&gt;
-        state({ greeting: 'Hello from Lyap!' });
-    &lt;/script&gt;
-    &lt;p ly-text="greeting"&gt;&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-
-        <p>That's it. No framework, no build, no config. Ready to dig in? Head over to the <a href="get-started.html">Getting Started</a> guide.</p>
-
+<div class="callout">
+  <svg class="callout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  <p>Missing something? Open an issue on <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+</div>
       </div>
-
-      <div class="pagination">
+<div class="pagination">
         <template ly-if="prevLink()">
           <a class="page-link prev" ly-attr:href="prevLink().href">
             <span class="page-label">← Previous</span>
@@ -213,6 +232,15 @@
         <span>v<span ly-text="version"></span> &middot; Built with Lyap &middot; <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a></span>
       </footer>
     </main>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <div class="toc-links">
+        <template ly-for="item in toc">
+          <a class="toc-link" ly-class=":item.level===3 sub" ly-attr:href="'#' + item.id" ly-text="item.text"></a>
+        </template>
+      </div>
+    </aside>
   </div>
 
     <script type="lyap">

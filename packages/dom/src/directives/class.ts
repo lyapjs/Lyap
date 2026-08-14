@@ -48,19 +48,6 @@ export function handleClass(element: Element, expression: string, scopeCtx: Scop
           const classes = classListStr.split(/\s+/).filter(Boolean);
           classes.forEach((c) => activeDynamicClasses.add(c));
         }
-      } else {
-        if (trimmedPart.startsWith('{')) {
-          const map = evaluateExpression(trimmedPart, {
-            scope: scopeCtx.state,
-            element,
-            refs: scopeCtx.refs
-          });
-          if (map && typeof map === 'object') {
-            for (const [cls, condition] of Object.entries(map)) {
-              if (condition) activeDynamicClasses.add(cls);
-            }
-          }
-        }
       }
     }
 

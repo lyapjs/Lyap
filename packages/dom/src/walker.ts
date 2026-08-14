@@ -23,30 +23,21 @@ export function walkTree(root: Node, parentScopeCtx?: ScopeContext): void {
   );
 
   if (directChildScripts.length > 0) {
-    let combinedState: Record<string, any> = {};
-    let combinedDerived: Record<string, any> = {};
+    // Build state directly on one shared object so the scope store, directive
+    // reads/writes and the script's own context all see the same storage.
+    let scopeRaw: Record<string, any> = parentScopeCtx ? Object.create(parentScopeCtx.state) : {};
     let initHooks: Array<() => void> = [];
     let mountHooks: Array<() => void> = [];
     let destroyHooks: Array<() => void> = [];
 
     directChildScripts.forEach((script) => {
-      const parsed = parseLyapScript(script.textContent || '', element);
-
-      // State key collision check
-      for (const k of Object.keys(parsed.state)) {
-        if (k in combinedState) {
-          console.warn(`[Lyap Guard Warning] State key collision: "${k}" already declared in container scope.`);
-        }
-      }
-
-      Object.assign(combinedState, parsed.state);
-      Object.assign(combinedDerived, parsed.derived);
+      const parsed = parseLyapScript(script.textContent || '', element, scopeRaw);
       initHooks.push(...parsed.initHooks);
       mountHooks.push(...parsed.mountHooks);
       destroyHooks.push(...parsed.destroyHooks);
     });
 
-    currentScope = createScope(element, combinedState, parentScopeCtx);
+    currentScope = createScope(element, {}, parentScopeCtx, true, scopeRaw);
     currentScope.destroyHooks.push(...destroyHooks);
     currentScope.mountHooks.push(...mountHooks);
 

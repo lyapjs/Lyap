@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lyap — Lightweight HTML Enhancement Library</title>
-<meta name="description" content="Lyap is a small, fast, no-build HTML enhancement library that adds reactivity to plain HTML. Beginner friendly, CSP safe, zero dependencies.">
+<title>Conditionals &amp; Loops — Lyap</title>
+<meta name="description" content="Conditionally render content with ly-if and ly-else, and iterate lists with ly-for using keyed templates.">
 <meta name="theme-color" id="meta-theme" content="#ffffff">
 <link rel="icon" href="favicons/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
@@ -25,7 +25,7 @@
 })();
 </script>
 </head>
-<body data-page="index">
+<body data-page="conditionals">
 <div id="app" ly-cloak>
 
   <header class="navbar">
@@ -40,7 +40,7 @@
       <nav class="nav-links" aria-label="Main">
         <a href="get-started.html">Docs</a>
         <a href="reference.html">Reference</a>
-        <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
+<a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
       <div class="nav-right">
         <div class="theme-toggle" ly-on:click.outside=":themeMenu = false">
@@ -89,111 +89,132 @@
     </aside>
 
     <main class="content">
-      <div class="doc landing">
+      <div class="doc doc-content">
+        <h1 id="conditionals-and-loops">Conditionals &amp; Loops</h1>
+<p class="lead">Control what's in the DOM. <code>ly-if</code> inserts or omits content, and <code>ly-for</code> renders lists — both driven by <code>&lt;template&gt;</code> elements.</p>
 
-        <section class="hero">
-          <div class="hero-badges">
-            <span class="badge badge-accent">v<span ly-text="version"></span></span>
-            <span class="badge">No build step</span>
-            <span class="badge">CSP safe</span>
-            <span class="badge">~22&nbsp;KB</span>
-            <span class="badge">Zero dependencies</span>
-          </div>
-          <h1>Reactivity for plain <span class="grad">HTML</span>.</h1>
-          <p class="tagline">Lyap is a small, simple, fast HTML enhancement library. Add reactive state, events, forms and loops directly in your markup — no build step, no framework, no lock-in.</p>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="get-started.html">Get started</a>
-            <a class="btn btn-ghost" href="reference.html">Directive reference</a>
-            <a class="btn btn-ghost" href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-          </div>
-          <div class="hero-warning">
-            <strong>Warning: prototype v2.</strong>
-            This library and site are a prototype built by AI agents. Use with caution — don&rsquo;t rely on it in production yet. A stable beta maintained by the Lyap team is coming soon.
-          </div>
-        </section>
+<h2 id="ly-if">ly-if / ly-else-if / ly-else</h2>
+<p>Wrap branches in <code>&lt;template&gt;</code> elements. Only the first matching branch is inserted into the DOM.</p>
 
-        <div class="example hero-demo">
-          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
-          <div class="example-body">
-            <div>
-                                <script type="lyap">
-                  state({ count: 0 });
+<pre class="doc-code" data-title="if.html"><code class="language-html">&lt;template ly-if="loggedIn"&gt;
+    &lt;div&gt;Welcome back, &lt;span ly-text="username"&gt;&lt;/span&gt;!&lt;/div&gt;
+&lt;/template&gt;
+&lt;template ly-else-if="loading"&gt;
+    &lt;div&gt;Authenticating&hellip;&lt;/div&gt;
+&lt;/template&gt;
+&lt;template ly-else&gt;
+    &lt;div&gt;Please log in to continue.&lt;/div&gt;
+&lt;/template&gt;</code></pre>
 
-                  derived({
-                      doubleCount() {
-                          return count * 2;
-                      }
-                  });
-                </script>
-              <p>Clicked <strong ly-text="count"></strong> times &middot; doubled <strong ly-text="doubleCount"></strong></p>
-              <div class="flex wrap">
-                <button class="btn btn-primary btn-sm" ly-on:click=":count++"> + </button>
-                <button class="btn btn-ghost btn-sm" ly-on:click=":count = 0">Reset</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="features">
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
-            <h3>No build step</h3>
-            <p>Drop one script tag into any HTML file. No bundler, compiler or server required — it just works.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <h3>100% CSP compliant</h3>
-            <p>Zero <code>eval()</code>, zero <code>new Function()</code>. A safe sandboxed micro-evaluator handles inline expressions.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-            <h3>Fast by design</h3>
-            <p>Small, simple and fast enough that ordinary websites never feel sluggish. Reactive effects are lazy and memoized.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
-            <h3>Declarative</h3>
-            <p>State and logic live in <code>&lt;script type="lyap"&gt;</code> blocks next to your markup. Structure dictates behavior.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
-            <h3>Scoped &amp; inherited</h3>
-            <p>Each container owns its scope. Child containers inherit parent state through prototypal delegation.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
-            <h3>Beginner friendly</h3>
-            <p>Write HTML as usual, then sprinkle <code>ly-</code> directives. Learning Lyap takes minutes, not months.</p>
-          </div>
-        </div>
-
-        <h2>Hello, world</h2>
-        <p>State is declared next to the markup it controls. The container below is <em>live</em>:</p>
-
-        <div class="example">
-          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
-          <div class="example-body">
-            <div>
-              <script type="lyap">
-                state({ greeting: 'Hello from Lyap!' });
-              </script>
-              <p><span ly-text="greeting"></span></p>
-            </div>
-          </div>
-        </div>
-
-        <pre class="doc-code" data-title="index.html"><code class="language-html">&lt;div&gt;
-    &lt;script type="lyap"&gt;
-        state({ greeting: 'Hello from Lyap!' });
-    &lt;/script&gt;
-    &lt;p ly-text="greeting"&gt;&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-
-        <p>That's it. No framework, no build, no config. Ready to dig in? Head over to the <a href="get-started.html">Getting Started</a> guide.</p>
-
+<div class="example">
+  <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
+  <div class="example-body">
+    <div>
+      <script type="lyap">
+        state({ status: 'guest', username: 'Alex' });
+      </script>
+      <template ly-if="status === 'user'">
+        <p>Welcome back, <strong ly-text="username"></strong>!</p>
+      </template>
+      <template ly-else-if="status === 'loading'">
+        <p>Authenticating&hellip;</p>
+      </template>
+      <template ly-else>
+        <p>Please log in to continue.</p>
+      </template>
+      <div class="flex wrap">
+        <button class="btn btn-ghost btn-sm" ly-on:click=":status = 'user'" ly-class=":status==='user' selected" style="border-color:var(--accent); color:var(--accent);">User</button>
+        <button class="btn btn-ghost btn-sm" ly-on:click=":status = 'loading'">Loading</button>
+        <button class="btn btn-ghost btn-sm" ly-on:click=":status = 'guest'">Guest</button>
       </div>
+    </div>
+  </div>
+</div>
 
-      <div class="pagination">
+<p><code>ly-show</code> keeps the element in the DOM and only hides it; <code>ly-if</code> actually removes it. Prefer <code>ly-if</code> for heavy or rarely-needed branches.</p>
+
+<h2 id="ly-for">ly-for — iterate lists</h2>
+<p>Iterate arrays with a <code>&lt;template ly-for&gt;</code>. Destructure the item and optional index, then access both inside the template.</p>
+
+<pre class="doc-code" data-title="for.html"><code class="language-html">&lt;ul&gt;
+    &lt;template ly-for="item in items"&gt;
+        &lt;li ly-text="item"&gt;&lt;/li&gt;
+    &lt;/template&gt;
+&lt;/ul&gt;
+
+&lt;!-- With index --&gt;
+&lt;template ly-for="(item, index) in items"&gt;
+    &lt;div&gt;
+        &lt;span ly-text="index + 1"&gt;&lt;/span&gt;: &lt;span ly-text="item.name"&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+
+<div class="example">
+  <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
+  <div class="example-body">
+    <div>
+      <script type="lyap">
+        state({ tasks: ['Learn Lyap', 'Build something', 'Ship it'] });
+        derived({
+            remaining() {
+                return tasks.length;
+            }
+        });
+
+        function addTask() {
+            const next = 'Task ' + (tasks.length + 1);
+            tasks.push(next);
+        }
+
+        function removeTask(index) {
+            tasks.splice(index, 1);
+        }
+      </script>
+      <p class="muted small"><span ly-text="remaining"></span> task(s)</p>
+      <ul style="margin:0 0 14px; padding-left:22px;">
+        <template ly-for="(task, index) in tasks">
+          <li style="margin:4px 0;">
+            <span ly-text="index + 1"></span>. <span ly-text="task"></span>
+            <button class="btn btn-ghost btn-sm" ly-on:click="removeTask(index)" style="margin-left:8px; padding:0 8px;">&times;</button>
+          </li>
+        </template>
+      </ul>
+      <div class="flex wrap">
+        <button class="btn btn-primary btn-sm" ly-on:click="addTask">Add task</button>
+        <button class="btn btn-ghost btn-sm" ly-on:click=":tasks = []">Clear all</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 id="ly-key">ly-key — stable identity</h2>
+<p>For mutable lists, give each rendered item a stable identity with <code>ly-key</code>. Lyap uses it to keep items stable across re-renders.</p>
+
+<pre class="doc-code" data-title="key.html"><code class="language-html">&lt;template ly-for="(item, index) in items"&gt;
+    &lt;div ly-key="item.id"&gt;
+        &lt;span ly-text="item.name"&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+
+<h2 id="numbers-and-objects">Numbers and objects</h2>
+<p><code>ly-for</code> can also iterate a number (producing <code>1..n</code>) or an object (producing <code>{ key, val }</code> entries).</p>
+
+<pre class="doc-code" data-title="ranges.html"><code class="language-html">&lt;!-- Number range: renders 1, 2, 3 --&gt;
+&lt;template ly-for="n in 3"&gt;
+    &lt;span ly-text="n"&gt;&lt;/span&gt;
+&lt;/template&gt;
+
+&lt;!-- Object entries --&gt;
+&lt;template ly-for="entry in config"&gt;
+    &lt;p&gt;&lt;span ly-text="entry.key"&gt;&lt;/span&gt;: &lt;span ly-text="entry.val"&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/template&gt;</code></pre>
+
+<div class="callout warn">
+  <svg class="callout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <p><strong>Array mutations are reactive.</strong> Pushing, popping or splicing the array bound to <code>ly-for</code> re-renders the list automatically.</p>
+</div>
+      </div>
+<div class="pagination">
         <template ly-if="prevLink()">
           <a class="page-link prev" ly-attr:href="prevLink().href">
             <span class="page-label">← Previous</span>
@@ -213,6 +234,15 @@
         <span>v<span ly-text="version"></span> &middot; Built with Lyap &middot; <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a></span>
       </footer>
     </main>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <div class="toc-links">
+        <template ly-for="item in toc">
+          <a class="toc-link" ly-class=":item.level===3 sub" ly-attr:href="'#' + item.id" ly-text="item.text"></a>
+        </template>
+      </div>
+    </aside>
   </div>
 
     <script type="lyap">

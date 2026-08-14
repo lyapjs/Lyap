@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lyap — Lightweight HTML Enhancement Library</title>
-<meta name="description" content="Lyap is a small, fast, no-build HTML enhancement library that adds reactivity to plain HTML. Beginner friendly, CSP safe, zero dependencies.">
+<title>Text, Show &amp; Cloak — Lyap</title>
+<meta name="description" content="Bind text safely with ly-text, toggle visibility with ly-show and prevent FOUC with ly-cloak.">
 <meta name="theme-color" id="meta-theme" content="#ffffff">
 <link rel="icon" href="favicons/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
@@ -25,7 +25,7 @@
 })();
 </script>
 </head>
-<body data-page="index">
+<body data-page="text">
 <div id="app" ly-cloak>
 
   <header class="navbar">
@@ -40,7 +40,7 @@
       <nav class="nav-links" aria-label="Main">
         <a href="get-started.html">Docs</a>
         <a href="reference.html">Reference</a>
-        <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
+<a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
       <div class="nav-right">
         <div class="theme-toggle" ly-on:click.outside=":themeMenu = false">
@@ -89,111 +89,88 @@
     </aside>
 
     <main class="content">
-      <div class="doc landing">
+      <div class="doc doc-content">
+        <h1 id="text-show-and-cloak">Text, Show &amp; Cloak</h1>
+<p class="lead">Three small directives cover most everyday needs: <code>ly-text</code> binds content safely, <code>ly-show</code> toggles visibility, and <code>ly-cloak</code> prevents that ugly flash on load.</p>
 
-        <section class="hero">
-          <div class="hero-badges">
-            <span class="badge badge-accent">v<span ly-text="version"></span></span>
-            <span class="badge">No build step</span>
-            <span class="badge">CSP safe</span>
-            <span class="badge">~22&nbsp;KB</span>
-            <span class="badge">Zero dependencies</span>
-          </div>
-          <h1>Reactivity for plain <span class="grad">HTML</span>.</h1>
-          <p class="tagline">Lyap is a small, simple, fast HTML enhancement library. Add reactive state, events, forms and loops directly in your markup — no build step, no framework, no lock-in.</p>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="get-started.html">Get started</a>
-            <a class="btn btn-ghost" href="reference.html">Directive reference</a>
-            <a class="btn btn-ghost" href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-          </div>
-          <div class="hero-warning">
-            <strong>Warning: prototype v2.</strong>
-            This library and site are a prototype built by AI agents. Use with caution — don&rsquo;t rely on it in production yet. A stable beta maintained by the Lyap team is coming soon.
-          </div>
-        </section>
+<h2 id="ly-text">ly-text — safe text binding</h2>
+<p><code>ly-text</code> binds an element's text content to an expression. It sets <code>textContent</code>, which <strong>automatically escapes HTML</strong> — text can never be injected as markup.</p>
 
-        <div class="example hero-demo">
-          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
-          <div class="example-body">
-            <div>
-                                <script type="lyap">
-                  state({ count: 0 });
+<pre class="doc-code" data-title="text.html"><code class="language-html">&lt;span ly-text="name"&gt;&lt;/span&gt;
+&lt;p ly-text="'Hello, ' + user.name + '!'"&gt;&lt;/p&gt;
+&lt;p ly-text="items.length + ' items'"&gt;&lt;/p&gt;</code></pre>
 
-                  derived({
-                      doubleCount() {
-                          return count * 2;
-                      }
-                  });
-                </script>
-              <p>Clicked <strong ly-text="count"></strong> times &middot; doubled <strong ly-text="doubleCount"></strong></p>
-              <div class="flex wrap">
-                <button class="btn btn-primary btn-sm" ly-on:click=":count++"> + </button>
-                <button class="btn btn-ghost btn-sm" ly-on:click=":count = 0">Reset</button>
-              </div>
-            </div>
-          </div>
-        </div>
+<div class="example">
+  <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
+  <div class="example-body">
+    <div>
+      <script type="lyap">
+        state({ name: 'Alex', description: '<b>bold</b> and <i>italic</i>' });
+      </script>
+      <p>Name: <strong ly-text="name"></strong></p>
+      <p>Unsafe text stays text: <code ly-text="description"></code></p>
+    </div>
+  </div>
+</div>
 
-        <div class="features">
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
-            <h3>No build step</h3>
-            <p>Drop one script tag into any HTML file. No bundler, compiler or server required — it just works.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <h3>100% CSP compliant</h3>
-            <p>Zero <code>eval()</code>, zero <code>new Function()</code>. A safe sandboxed micro-evaluator handles inline expressions.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-            <h3>Fast by design</h3>
-            <p>Small, simple and fast enough that ordinary websites never feel sluggish. Reactive effects are lazy and memoized.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
-            <h3>Declarative</h3>
-            <p>State and logic live in <code>&lt;script type="lyap"&gt;</code> blocks next to your markup. Structure dictates behavior.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
-            <h3>Scoped &amp; inherited</h3>
-            <p>Each container owns its scope. Child containers inherit parent state through prototypal delegation.</p>
-          </div>
-          <div class="feature-card">
-            <span class="f-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></span>
-            <h3>Beginner friendly</h3>
-            <p>Write HTML as usual, then sprinkle <code>ly-</code> directives. Learning Lyap takes minutes, not months.</p>
-          </div>
-        </div>
+<div class="callout">
+  <svg class="callout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+  <p><strong>XSS-safe by default.</strong> <code>ly-text</code> uses <code>textContent</code> internally, so user-provided strings render as plain text — never as HTML.</p>
+</div>
 
-        <h2>Hello, world</h2>
-        <p>State is declared next to the markup it controls. The container below is <em>live</em>:</p>
+<h2 id="ly-show">ly-show — toggle visibility</h2>
+<p><code>ly-show</code> toggles an element's <code>display</code> style. The element stays in the DOM — only its visibility changes.</p>
 
-        <div class="example">
-          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
-          <div class="example-body">
-            <div>
-              <script type="lyap">
-                state({ greeting: 'Hello from Lyap!' });
-              </script>
-              <p><span ly-text="greeting"></span></p>
-            </div>
-          </div>
-        </div>
+<pre class="doc-code" data-title="show.html"><code class="language-html">&lt;p ly-show="open"&gt;This paragraph toggles visibility.&lt;/p&gt;
+&lt;button ly-on:click=":open = !open"&gt;Toggle&lt;/button&gt;</code></pre>
 
-        <pre class="doc-code" data-title="index.html"><code class="language-html">&lt;div&gt;
+<div class="example">
+  <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
+  <div class="example-body">
+    <div>
+      <script type="lyap">
+        state({ open: false });
+      </script>
+      <p ly-show="open" class="muted">Now you see me.</p>
+      <button class="btn btn-primary btn-sm" ly-on:click=":open = !open" ly-text=":open ? 'Hide' : 'Show'"></button>
+    </div>
+  </div>
+</div>
+
+<p>For content that should be added and removed from the DOM entirely — not just hidden — use <code>ly-if</code> instead. See <a href="conditionals.html">Conditionals &amp; Loops</a>.</p>
+
+<h2 id="ly-cloak">ly-cloak — prevent FOUC</h2>
+<p>When a page loads, Lyap has not yet processed the markup. A bound element could briefly show raw, unstyled content. <code>ly-cloak</code> hides the container until Lyap initializes, then the attribute is removed.</p>
+
+<pre class="doc-code" data-title="cloak.html"><code class="language-html">&lt;style&gt;
+    [ly-cloak] { display: none !important; }
+&lt;/style&gt;
+
+&lt;div ly-cloak&gt;
     &lt;script type="lyap"&gt;
-        state({ greeting: 'Hello from Lyap!' });
+        state({ count: 0 });
     &lt;/script&gt;
-    &lt;p ly-text="greeting"&gt;&lt;/p&gt;
+    &lt;h1 ly-text="count"&gt;&lt;/h1&gt;
 &lt;/div&gt;</code></pre>
 
-        <p>That's it. No framework, no build, no config. Ready to dig in? Head over to the <a href="get-started.html">Getting Started</a> guide.</p>
+<div class="callout warn">
+  <svg class="callout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <p><strong>Tip:</strong> the rule <code>[ly-cloak] { display: none !important; }</code> should live in your page's CSS. Without it, <code>ly-cloak</code> has nothing to apply until Lyap runs.</p>
+</div>
 
+<h2 id="quick-comparison">ly-show vs ly-if</h2>
+<table class="doc-table">
+  <thead>
+    <tr><th></th><th>ly-show</th><th>ly-if</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mechanism</td><td>Toggles CSS <code>display</code></td><td>Inserts / omits DOM nodes</td></tr>
+    <tr><td>Element stays in DOM</td><td>Yes</td><td>No — removed entirely</td></tr>
+    <tr><td>Best for</td><td>Frequent, cheap toggles</td><td>Rare, heavier branches</td></tr>
+  </tbody>
+</table>
       </div>
-
-      <div class="pagination">
+<div class="pagination">
         <template ly-if="prevLink()">
           <a class="page-link prev" ly-attr:href="prevLink().href">
             <span class="page-label">← Previous</span>
@@ -213,6 +190,15 @@
         <span>v<span ly-text="version"></span> &middot; Built with Lyap &middot; <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a></span>
       </footer>
     </main>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <div class="toc-links">
+        <template ly-for="item in toc">
+          <a class="toc-link" ly-class=":item.level===3 sub" ly-attr:href="'#' + item.id" ly-text="item.text"></a>
+        </template>
+      </div>
+    </aside>
   </div>
 
     <script type="lyap">

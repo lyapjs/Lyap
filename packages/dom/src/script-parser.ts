@@ -9,8 +9,8 @@ export interface ScriptScopeResult {
   destroyHooks: Array<() => void>;
 }
 
-export function parseLyapScript(scriptContent: string, containerElement?: Element): ScriptScopeResult {
-  const rawState: Record<string, any> = {};
+export function parseLyapScript(scriptContent: string, containerElement?: Element, stateTarget?: Record<string, any>): ScriptScopeResult {
+  const rawState: Record<string, any> = stateTarget || {};
   const derivedFns: Record<string, () => any> = {};
   const functionsObj: Record<string, Function> = {};
   const initHooks: Array<() => void> = [];
@@ -48,7 +48,6 @@ export function parseLyapScript(scriptContent: string, containerElement?: Elemen
   const scopeTarget: Record<string, any> = {
     state: (initialState: Record<string, any>) => {
       Object.assign(rawState, initialState);
-      Object.assign(scopeTarget, initialState);
     },
     derived: (derivedMap: Record<string, () => any>) => {
       Object.assign(derivedFns, derivedMap);
@@ -59,6 +58,11 @@ export function parseLyapScript(scriptContent: string, containerElement?: Elemen
     destroy
   };
 
+  // Reactive store wraps the same object script code reads/writes, created
+  // up-front so scopeProxy reads can route through it and participate in
+  // observer tracking (required for derived recomputation).
+  const reactiveState = store(rawState);
+
   const scopeProxy = new Proxy(scopeTarget, {
     has(target, prop) {
       if (typeof prop === 'string' && (prop in target || prop in rawState || prop in derivedFns)) {
@@ -68,13 +72,13 @@ export function parseLyapScript(scriptContent: string, containerElement?: Elemen
     },
     get(target, prop, receiver) {
       if (prop in target) return target[prop as string];
-      if (prop in rawState) return rawState[prop as string];
+      if (prop in rawState) return reactiveState[prop as string];
       if (prop in derivedFns) return derivedFns[prop as string].call(receiver);
       return Reflect.get(target, prop, receiver);
     },
     set(target, prop, value, receiver) {
       if (prop in rawState) {
-        rawState[prop as string] = value;
+        reactiveState[prop as string] = value;
         return true;
       }
       target[prop as string] = value;
@@ -110,9 +114,6 @@ export function parseLyapScript(scriptContent: string, containerElement?: Elemen
     }
   }
 
-  // Create reactive store for state
-  const reactiveState = store(rawState);
-
   const reactiveDerived: Record<string, any> = {};
   for (const [key, getter] of Object.entries(derivedFns)) {
     const comp = computed(() => {
@@ -128,7 +129,9 @@ export function parseLyapScript(scriptContent: string, containerElement?: Elemen
       return getter.call(evalProxy);
     });
 
-    Object.defineProperty(reactiveState, key, {
+    // Define the accessor on the underlying target (not the store proxy) so the
+    // store's get trap (Reflect.get on target) actually hits it.
+    Object.defineProperty(rawState, key, {
       get: () => comp.value,
       enumerable: true,
       configurable: true

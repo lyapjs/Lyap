@@ -12,14 +12,23 @@ export interface ScopeContext {
 
 const elementScopeMap = new WeakMap<Element, ScopeContext>();
 
-export function createScope(element: Element, initialState: Record<string, any> = {}, parent?: ScopeContext, trackChild: boolean = true): ScopeContext {
+export function createScope(element: Element, initialState: Record<string, any> = {}, parent?: ScopeContext, trackChild: boolean = true, stateObject?: Record<string, any>): ScopeContext {
   const parentState = parent ? parent.state : {};
 
   // Prototypal scope inheritance: fall through to the PARENT's reactive store
   // (not its raw target) so reads of inherited primitives track the parent's
   // signal and stay reactive.
-  const scopeState = Object.create(parentState);
-  Object.assign(scopeState, initialState);
+  let scopeState: Record<string, any>;
+  if (stateObject) {
+    // Reuse the caller-provided object (the script parser's raw state) so that
+    // script-context reads, directive reads and reactive writes all share the
+    // SAME property storage.
+    scopeState = stateObject;
+    Object.setPrototypeOf(scopeState, parentState);
+  } else {
+    scopeState = Object.create(parentState);
+    Object.assign(scopeState, initialState);
+  }
 
   // Wrap scope state in reactive Proxy store
   const reactiveStore = store(scopeState);
