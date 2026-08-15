@@ -126,20 +126,17 @@
   <div class="example-body">
     <div>
       <script type="lyap">
-        state({ running: true });
+        state({ running: true, secs: 0 });
 
         mount(() => {
             const label = document.querySelector('[data-timer]');
-            const start = Date.now();
-            const paint = () => {
+            const timer = setInterval(() => {
                 if (!running) return;
-                const secs = Math.floor((Date.now() - start) / 1000);
+                secs += 1;
                 const m = Math.floor(secs / 60);
                 const s = secs % 60;
                 label.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-            };
-            paint();
-            const timer = setInterval(paint, 1000);
+            }, 1000);
             cleanup(() => clearInterval(timer));
         });
       </script>
@@ -151,20 +148,18 @@
   </div>
 </div>
 
-<p>The <code>mount()</code> hook starts the timer and paints the clock directly; the <strong>Pause / Resume</strong> button is reactive — it toggles the <code>running</code> state, which the timer reads on each tick. Notice the <code>cleanup()</code> call inside <code>mount()</code>: it registers a teardown for resources created during that mount cycle, so the timer is cleared when the scope is destroyed.</p>
+<p>The <code>mount()</code> hook starts the timer and paints the clock directly; the <strong>Pause / Resume</strong> button is reactive — it toggles the <code>running</code> state, which the timer reads on each tick. While paused the clock freezes and resumes where it left off, because the paused interval never advances the <code>secs</code> counter. Notice the <code>cleanup()</code> call inside <code>mount()</code>: it registers a teardown for resources created during that mount cycle, so the timer is cleared when the scope is destroyed.</p>
 
 <pre class="doc-code" data-title="timer.html"><code class="language-html">&lt;script type="lyap"&gt;
-    state({ running: true });
+    state({ running: true, secs: 0 });
 
     mount(() =&gt; {
         const label = document.querySelector('[data-timer]');
-        const start = Date.now();
-        const paint = () =&gt; {
+        const timer = setInterval(() =&gt; {
             if (!running) return;
-            label.textContent = Math.floor((Date.now() - start) / 1000) + 's';
-        };
-        paint();
-        const timer = setInterval(paint, 1000);
+            secs += 1;
+            label.textContent = secs + 's';
+        }, 1000);
 
         cleanup(() =&gt; {
             clearInterval(timer);

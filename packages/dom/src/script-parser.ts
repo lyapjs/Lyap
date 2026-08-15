@@ -1,4 +1,4 @@
-import { store, computed, onCleanup as registerReactiveCleanup } from '@lyapjs/reactive';
+import { store, computed } from '@lyapjs/reactive';
 
 export interface ScriptScopeResult {
   state: Record<string, any>;
@@ -9,13 +9,13 @@ export interface ScriptScopeResult {
   destroyHooks: Array<() => void>;
 }
 
-export function parseLyapScript(scriptContent: string, containerElement?: Element, stateTarget?: Record<string, any>): ScriptScopeResult {
+export function parseLyapScript(scriptContent: string, containerElement?: Element, stateTarget?: Record<string, any>, sharedDestroyHooks?: Array<() => void>): ScriptScopeResult {
   const rawState: Record<string, any> = stateTarget || {};
   const derivedFns: Record<string, () => any> = {};
   const functionsObj: Record<string, Function> = {};
   const initHooks: Array<() => void> = [];
   const mountHooks: Array<() => void> = [];
-  const destroyHooks: Array<() => void> = [];
+  const destroyHooks: Array<() => void> = sharedDestroyHooks || [];
 
   const init = (fn: () => void) => {
     if (typeof fn === 'function') initHooks.push(fn);
@@ -26,9 +26,7 @@ export function parseLyapScript(scriptContent: string, containerElement?: Elemen
   };
 
   const cleanup = (fn: () => void) => {
-    if (typeof fn === 'function') {
-      registerReactiveCleanup(fn);
-    }
+    if (typeof fn === 'function') destroyHooks.push(fn);
   };
 
   const destroy = (fn: () => void) => {

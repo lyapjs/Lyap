@@ -12,7 +12,7 @@ import { handleFor } from './directives/for.js';
 import { handleRef } from './directives/ref.js';
 
 export function walkTree(root: Node, parentScopeCtx?: ScopeContext): void {
-  if (root.nodeType !== 1) return; // Only Element nodes
+  if (root.nodeType !== Node.ELEMENT_NODE) return; // Only Element nodes
 
   const element = root as Element;
   let currentScope = parentScopeCtx || getScope(element);
@@ -31,14 +31,15 @@ export function walkTree(root: Node, parentScopeCtx?: ScopeContext): void {
     let destroyHooks: Array<() => void> = [];
 
     directChildScripts.forEach((script) => {
-      const parsed = parseLyapScript(script.textContent || '', element, scopeRaw);
+      const parsed = parseLyapScript(script.textContent || '', element, scopeRaw, destroyHooks);
       initHooks.push(...parsed.initHooks);
       mountHooks.push(...parsed.mountHooks);
-      destroyHooks.push(...parsed.destroyHooks);
     });
 
     currentScope = createScope(element, {}, parentScopeCtx, true, scopeRaw);
-    currentScope.destroyHooks.push(...destroyHooks);
+    // Reassign rather than copy: cleanup()/destroy() registered later (e.g. inside
+    // mount()) must land on the live scope's destroy hooks, which run on teardown.
+    currentScope.destroyHooks = destroyHooks;
     currentScope.mountHooks.push(...mountHooks);
 
     // Trigger init hooks
