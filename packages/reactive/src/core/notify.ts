@@ -3,7 +3,7 @@ import type { Computed } from "../primitives/computed.js";
 import { hasFlag, NodeFlags, NodeKind } from "./flags.js";
 import type { Observer } from "./node.js";
 import type { Effect } from "../primitives/effect.js";
-import { jobQueue, queueFlush } from "./scheduler.js";
+import { queueJob, queueFlush } from "./scheduler.js";
 
 export const enum NotifyType {
     DIRTY,
@@ -16,7 +16,7 @@ export function notify<T>(observers: Set<Observer>, type: NotifyType) {
         if (observer.kind === NodeKind.EFFECT) {
             if (!hasFlag(observer, NodeFlags.DISPOSED)) {
                 if (!isEffectSet) isEffectSet = true;
-                jobQueue.add(observer as Effect);
+                queueJob(observer as Effect);
             }
         } else {
             const computed = observer as Computed<any>;

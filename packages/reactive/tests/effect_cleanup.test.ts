@@ -84,4 +84,21 @@ describe('Effect Return Cleanup Tests', () => {
             e.dispose();
         }).not.toThrow();
     });
+
+    it('removes an effect from its sources when cleanup throws', () => {
+        const count = signal(5);
+        const e = effect(() => {
+            count.value;
+            return () => {
+                throw new Error('cleanup failed');
+            };
+        });
+        e.runEffect();
+
+        expect(() => e.dispose()).toThrow('cleanup failed');
+        expect(count.observers.has(e)).toBe(false);
+
+        count.set(6);
+        expect(() => e.dispose()).not.toThrow();
+    });
 });

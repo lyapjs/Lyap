@@ -14,17 +14,29 @@ export class Owner {
     }
 
     dispose() {
+        let firstError: unknown;
+
         for (const cleanup of this.cleanups) {
-            cleanup();
+            try {
+                cleanup();
+            } catch (error) {
+                if (firstError === undefined) firstError = error;
+            }
         }
         this.cleanups = [];
 
         for (const node of this.resources) {
             if (typeof node.dispose === 'function') {
-                node.dispose();
+                try {
+                    node.dispose();
+                } catch (error) {
+                    if (firstError === undefined) firstError = error;
+                }
             }
         }
         this.resources.clear();
+
+        if (firstError !== undefined) throw firstError;
     }
 
     run() {

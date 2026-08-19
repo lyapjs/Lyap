@@ -2,16 +2,23 @@
   "name": "dom",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run --environment happy-dom"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "@lyapjs/reactive": "file:../reactive",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
+  },
+  "devDependencies": {
+    "happy-dom": "^20.0.0"
   }
 }

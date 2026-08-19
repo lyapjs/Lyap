@@ -1,8 +1,9 @@
 import { cleanup } from "../core/cleanup.js";
-import { addFlag, hasFlag, NodeFlags, NodeKind } from "../core/flags.js";
+import { addFlag, hasFlag, NodeFlags, NodeKind, removeFlag } from "../core/flags.js";
 import { Node, type EffectFn, type Observer, type Source } from "../core/node.js";
 import { currentObserver } from "../core/tracking.js";
 import { currentOwner } from "./owner.js";
+import { jobQueue } from "../core/scheduler.js";
 
 export class Effect extends Node implements Observer {
   sources = new Set<Source>();
@@ -15,20 +16,40 @@ export class Effect extends Node implements Observer {
   }
 
   dispose() {
-    if (this.cleanupFn) {
-      this.cleanupFn();
+    if (hasFlag(this, NodeFlags.DISPOSED)) return;
+
+    jobQueue.delete(this);
+    removeFlag(this, NodeFlags.QUEUED);
+
+    let firstError: unknown;
+    try {
+      this.cleanupFn?.();
+    } catch (error) {
+      firstError = error;
+    } finally {
       this.cleanupFn = undefined;
+      cleanup(this);
+      addFlag(this, NodeFlags.DISPOSED);
     }
-    cleanup(this);
-    addFlag(this, NodeFlags.DISPOSED);
+
+    if (firstError !== undefined) throw firstError;
   }
 
   runEffect() {
     if (hasFlag(this, NodeFlags.DISPOSED)) return;
-    if (this.cleanupFn) {
-      this.cleanupFn();
+
+    jobQueue.delete(this);
+    removeFlag(this, NodeFlags.QUEUED);
+
+    let cleanupError: unknown;
+    try {
+      this.cleanupFn?.();
+    } catch (error) {
+      cleanupError = error;
+    } finally {
       this.cleanupFn = undefined;
     }
+
     cleanup(this);
     currentObserver.push(this);
     try {
@@ -39,6 +60,8 @@ export class Effect extends Node implements Observer {
     } finally {
       currentObserver.pop();
     }
+
+    if (cleanupError !== undefined) throw cleanupError;
   }
 }
 

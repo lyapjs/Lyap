@@ -108,4 +108,69 @@ describe('Reactive Store Tests', () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(runs).toBe(3);
   });
+
+  it('tracks adding an undefined property through has and Object.keys', async () => {
+    const state = store<{ value?: undefined }>({});
+    let present = false;
+    let keyCount = 0;
+
+    const e = effect(() => {
+      present = 'value' in state;
+      keyCount = Object.keys(state).length;
+    });
+    e.runEffect();
+
+    state.value = undefined;
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(present).toBe(true);
+    expect(keyCount).toBe(1);
+  });
+
+  it('updates indexed dependencies when an array is truncated', async () => {
+    const list = store([1, 2, 3]);
+    let value: number | undefined = list[2];
+
+    const e = effect(() => {
+      value = list[2];
+    });
+    e.runEffect();
+
+    list.length = 1;
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(value).toBeUndefined();
+  });
+
+  it('tracks symbol properties and array key deletion', async () => {
+    const key = Symbol('key');
+    const state = store({ [key]: 1 });
+    const list = store([1, 2]);
+    let symbolValue = 0;
+    let keys: string[] = [];
+
+    const e = effect(() => {
+      symbolValue = state[key];
+      keys = Object.keys(list);
+    });
+    e.runEffect();
+
+    state[key] = 2;
+    delete list[1];
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(symbolValue).toBe(2);
+    expect(keys).toEqual(['0']);
+  });
+
+  it('does not proxy native collections into incompatible receivers', () => {
+    const map = new Map([['name', 'Lyap']]);
+    const state = store({ map });
+
+    expect(state.map).toBe(map);
+    expect(state.map.get('name')).toBe('Lyap');
+  });
 });

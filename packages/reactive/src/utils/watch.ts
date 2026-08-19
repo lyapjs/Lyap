@@ -9,6 +9,14 @@ export interface WatchOptions {
     immediate?: boolean;
 }
 
+function hasChanged(next: any, previous: any): boolean {
+    if (Array.isArray(next) && Array.isArray(previous)) {
+        if (next.length !== previous.length) return true;
+        return next.some((value, index) => !Object.is(value, previous[index]));
+    }
+    return !Object.is(next, previous);
+}
+
 export function watch<T>(
     source: WatchSource<T> | WatchSource<T>[],
     cb: (newValue: any, oldValue: any) => void,
@@ -32,6 +40,8 @@ export function watch<T>(
             }
             return;
         }
+
+        if (!hasChanged(newValue, oldValue)) return;
 
         const prev = oldValue;
         oldValue = Array.isArray(newValue) ? [...newValue] : newValue;

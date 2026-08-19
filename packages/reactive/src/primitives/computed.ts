@@ -12,6 +12,7 @@ export class Computed<T> extends Node implements Source, Observer {
     observers = new Set<Observer>();
 
     get value(): T {
+        if (hasFlag(this, NodeFlags.DISPOSED)) return this._value;
         if (hasFlag(this, NodeFlags.DIRTY) || hasFlag(this, NodeFlags.PENDING)) this.update();
         if (currentObserver.length !== 0) {
             const observer = currentObserver[currentObserver.length - 1] as Observer;
@@ -28,14 +29,21 @@ export class Computed<T> extends Node implements Source, Observer {
     }
 
     update(): void {
+        if (hasFlag(this, NodeFlags.DISPOSED)) return;
+        if (hasFlag(this, NodeFlags.RUNNING)) {
+            throw new Error('Circular computed dependency detected');
+        }
+
         if (hasFlag(this, NodeFlags.DIRTY)) {
             cleanup(this);
+            addFlag(this, NodeFlags.RUNNING);
             currentObserver.push(this);
             let value: T;
             try {
                 value = this.fn();
             } finally {
                 currentObserver.pop();
+                removeFlag(this, NodeFlags.RUNNING);
             }
             if (!Object.is(value, this._value)) {
                 this._value = value;
@@ -56,12 +64,14 @@ export class Computed<T> extends Node implements Source, Observer {
                         computed.update();
                         if (computed.version !== lastVersion) {
                             cleanup(this);
+                            addFlag(this, NodeFlags.RUNNING);
                             currentObserver.push(this);
                             let value: T;
                             try {
                                 value = this.fn();
                             } finally {
                                 currentObserver.pop();
+                                removeFlag(this, NodeFlags.RUNNING);
                             }
                             if (!Object.is(value, this._value)) {
                                 this._value = value;
@@ -82,16 +92,17 @@ export class Computed<T> extends Node implements Source, Observer {
 
     dispose() {
         cleanup(this);
+        addFlag(this, NodeFlags.DISPOSED);
     }
 
     markDirty() {
-        if (hasFlag(this, NodeFlags.DIRTY)) return;
+        if (hasFlag(this, NodeFlags.DISPOSED) || hasFlag(this, NodeFlags.DIRTY)) return;
         addFlag(this, NodeFlags.DIRTY);
         notify(this.observers, NotifyType.PENDING);
     }
 
     markPending() {
-        if (hasFlag(this, NodeFlags.DIRTY) || hasFlag(this, NodeFlags.PENDING)) return;
+        if (hasFlag(this, NodeFlags.DISPOSED) || hasFlag(this, NodeFlags.DIRTY) || hasFlag(this, NodeFlags.PENDING)) return;
         addFlag(this, NodeFlags.PENDING);
         notify(this.observers, NotifyType.PENDING);
     }
