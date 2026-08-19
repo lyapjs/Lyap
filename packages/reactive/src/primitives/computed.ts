@@ -43,6 +43,7 @@ export class Computed<T> extends Node implements Source, Observer {
                 notify(this.observers, NotifyType.DIRTY);
             }
             removeFlag(this, NodeFlags.DIRTY);
+            removeFlag(this, NodeFlags.PENDING);
             return;
         }
 

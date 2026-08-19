@@ -86,4 +86,26 @@ describe('Reactive Store Tests', () => {
     expect(isStore(rawObj)).toBe(false);
     expect(toRaw(sObj)).toBe(rawObj);
   });
+
+  it('re-runs effects tracking Object.keys when keys are added/removed', async () => {
+    const state = store<{ [key: string]: number | undefined }>({ a: 1 });
+    let runs = 0;
+
+    const e = effect(() => {
+      runs++;
+      const _ = Object.keys(state).length;
+    });
+    e.runEffect();
+    expect(runs).toBe(1);
+
+    state.b = 2;
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(runs).toBe(2);
+
+    delete state.a;
+    await Promise.resolve();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(runs).toBe(3);
+  });
 });

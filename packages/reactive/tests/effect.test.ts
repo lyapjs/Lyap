@@ -61,4 +61,26 @@ describe('Effect Tests', () => {
 
         expect(result).toBe(10);
     });
+
+    it('keeps scheduling other effects after one effect throws', async () => {
+        const count = signal(0);
+        const log: number[] = [];
+
+        const throwing = effect(() => {
+            if (count.value > 0) throw new Error('boom');
+        });
+        throwing.runEffect();
+
+        const watcher = effect(() => {
+            log.push(count.value);
+        });
+        watcher.runEffect();
+        expect(log).toEqual([0]);
+
+        count.set(1);
+        await Promise.resolve();
+        await new Promise((res) => setTimeout(res, 0));
+
+        expect(log).toEqual([0, 1]);
+    });
 });

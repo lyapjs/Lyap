@@ -85,6 +85,9 @@ export function store<T extends object>(initialTarget: T): T {
         if (Array.isArray(target) && (isNew || target.length !== oldLength)) {
           const lengthSig = signalMap.get('length');
           if (lengthSig) lengthSig.set(target.length);
+        } else if (!Array.isArray(target) && isNew) {
+          const keysSig = signalMap.get('keys');
+          if (keysSig) keysSig.set(Reflect.ownKeys(target));
         }
       }
 
@@ -100,6 +103,10 @@ export function store<T extends object>(initialTarget: T): T {
           sig.set(undefined);
         }
         signalMap.delete(prop);
+        if (!Array.isArray(target)) {
+          const keysSig = signalMap.get('keys');
+          if (keysSig) keysSig.set(Reflect.ownKeys(target));
+        }
       }
       return result;
     },

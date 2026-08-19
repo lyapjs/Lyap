@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { signal, Computed, computed } from '../src/index.js';
+import { signal, Computed, computed, effect } from '../src/index.js';
 
 describe('Computed Tests', () => {
     it('creates a Computed instance', () => {
@@ -43,5 +43,30 @@ describe('Computed Tests', () => {
 
         expect(c.value).toBe(40);
         expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not leave stale PENDING flags leaking into future updates', async () => {
+        const s1 = signal(1);
+        const s2 = signal(10);
+        const u = computed(() => s1.value);
+        const x = computed(() => s2.value + u.value);
+        const p = computed(() => x.value);
+        let result = 0;
+        const e = effect(() => {
+            result = p.value;
+        });
+        e.runEffect();
+        expect(result).toBe(11);
+
+        s1.set(2);
+        s2.set(9);
+        await Promise.resolve();
+        await new Promise((r) => setTimeout(r, 0));
+        expect(result).toBe(11);
+
+        s1.set(3);
+        await Promise.resolve();
+        await new Promise((r) => setTimeout(r, 0));
+        expect(result).toBe(12);
     });
 });
