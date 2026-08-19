@@ -134,4 +134,38 @@ describe('Structural Directives (ly-if, ly-if-else, ly-else, ly-for, ly-key)', (
 
     expect(() => Lyap.mount(root)).toThrow('Duplicate loop key: 1');
   });
+
+  it('renders conditional branches defined inside template elements', async () => {
+    const root = document.createElement('div');
+    const script = document.createElement('script');
+    root.appendChild(script);
+
+    const t1 = document.createElement('template');
+    t1.setAttribute('ly-if', 'tmplApp.show');
+    const link = document.createElement('a');
+    link.textContent = 'Next Link';
+    t1.content.appendChild(link);
+
+    root.appendChild(t1);
+    document.body.appendChild(root);
+
+    Object.defineProperty(document, 'currentScript', { value: script, configurable: true });
+    const app = Lyap.scope('tmplApp');
+    app.state({ show: true });
+
+    const runtime = Lyap.mount(root);
+    await runtime.ready;
+
+    expect(root.querySelector('a')?.textContent).toBe('Next Link');
+
+    app.show = false;
+    await tick();
+    expect(root.querySelector('a')).toBeNull();
+
+    app.show = true;
+    await tick();
+    expect(root.querySelector('a')?.textContent).toBe('Next Link');
+
+    void runtime.destroy();
+  });
 });

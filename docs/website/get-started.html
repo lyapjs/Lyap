@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started — Lyap</title>
+<meta name="description" content="Install Lyap with a single script tag and write your first reactive page in minutes. No build step required.">
+<meta name="theme-color" id="meta-theme" content="#ffffff">
+<link rel="icon" href="favicons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+<link rel="apple-touch-icon" href="favicons/apple-touch-icon.png">
+<link rel="manifest" href="favicons/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function () {
+  var stored = null;
+  try { stored = localStorage.getItem('lyap-theme'); } catch (e) {}
+  var mode = stored || 'system';
+  var dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+})();
+</script>
+<script src="assets/site.js"></script>
+<script src="lyap.min.js"></script>
+</head>
+<body data-page="get-started">
+<div id="app">
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button class="nav-icon-btn menu-btn" ly-on:click="app.toggleDrawer()" ly-bind:aria-expanded="app.drawer" aria-label="Toggle navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a class="brand" href="index.html">
+        <span class="brand-mark">⚡</span>
+        <span>Lyap</span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="get-started.html">Docs</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+      <div class="nav-right">
+        <div class="theme-toggle">
+          <button class="nav-icon-btn" ly-on:click="app.toggleThemeMenu()" aria-label="Change color theme">
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <div class="theme-menu" ly-show="app.themeMenu" role="menu">
+            <button class="theme-menu-item" ly-on:click="app.setTheme('system')" ly-bind:class="app.theme === 'system' ? 'theme-menu-item selected' : 'theme-menu-item'" role="menuitemradio" aria-checked="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span>System</span>
+              <svg class="check" ly-show="app.theme === 'system'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="theme-menu-item" ly-on:click="app.setTheme('light')" ly-bind:class="app.theme === 'light' ? 'theme-menu-item selected' : 'theme-menu-item'" role="menuitemradio" aria-checked="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <span>Light</span>
+              <svg class="check" ly-show="app.theme === 'light'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="theme-menu-item" ly-on:click="app.setTheme('dark')" ly-bind:class="app.theme === 'dark' ? 'theme-menu-item selected' : 'theme-menu-item'" role="menuitemradio" aria-checked="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              <span>Dark</span>
+              <svg class="check" ly-show="app.theme === 'dark'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="drawer-backdrop" ly-show="app.drawer" ly-on:click="app.closeDrawer()"></div>
+
+    <aside class="sidebar" ly-bind:class="app.drawer ? 'sidebar open' : 'sidebar'" aria-label="Documentation">
+      <div class="sidebar-inner">
+        <nav class="side-nav">
+          <template ly-for="row in app.navList" ly-key="row.id || row.label">
+            <p class="nav-group" ly-if="row.kind === 'group'" ly-text="row.label"></p>
+            <a class="nav-link" ly-else ly-bind:href="row.href" ly-bind:class="row.id === app.current ? 'nav-link active' : 'nav-link'" ly-text="row.label"></a>
+          </template>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="doc doc-content">
+
+        <h1 id="getting-started">Getting Started</h1>
+        <p class="lead">Lyap adds reactivity to plain HTML. Drop in one script tag, write a little markup, and you're done.</p>
+
+        <h2 id="installation">Installation</h2>
+        <p>Download <a href="lyap.min.js">lyap.min.js</a> and include it in your page. Lyap automatically boots and scans your markup on <code>DOMContentLoaded</code>.</p>
+
+        <pre class="doc-code" data-title="index.html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;My Page&lt;/title&gt;
+    &lt;script src="lyap.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;!-- Your markup and scoped scripts go here --&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <p>You can also load it from a CDN or any static host:</p>
+        <pre class="doc-code" data-title="CDN"><code class="language-html">&lt;script src="https://example.com/lyap.min.js"&gt;&lt;/script&gt;</code></pre>
+
+        <h2 id="your-first-page">Your first reactive page</h2>
+        <p>A Lyap app is just HTML. Scopes, state, derived calculations, and actions are declared inside standard <code>&lt;script&gt;</code> tags using <code>Lyap.scope(name)</code>:</p>
+
+        <div class="example">
+          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
+          <div class="example-body">
+            <div>
+              <script>
+                const counterDemo = Lyap.scope('counterDemo');
+                counterDemo.state({ count: 0 });
+                counterDemo.actions({
+                  increment() {
+                    this.count++;
+                  }
+                });
+              </script>
+              <p>Count: <strong ly-text="counterDemo.count"></strong></p>
+              <button class="btn btn-primary btn-sm" ly-on:click="counterDemo.increment()">Increment</button>
+            </div>
+          </div>
+        </div>
+
+        <pre class="doc-code" data-title="counter.html"><code class="language-html">&lt;div&gt;
+    &lt;script&gt;
+        const counter = Lyap.scope('counter');
+        counter.state({ count: 0 });
+        counter.actions({
+            increment() {
+                this.count++;
+            }
+        });
+    &lt;/script&gt;
+
+    &lt;p&gt;Count: &lt;span ly-text="counter.count"&gt;&lt;/span&gt;&lt;/p&gt;
+    &lt;button ly-on:click="counter.increment()"&gt;Increment&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="callout">
+          <svg class="callout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p><strong>How it works:</strong> Scoped <code>&lt;script&gt;</code> tags declare state and actions attached to their parent container element. Lyap walks the DOM and binds directives like <code>ly-text</code> and <code>ly-on</code> directly to fine-grained reactive signals.</p>
+        </div>
+
+        <h2 id="core-ideas">Core ideas</h2>
+        <p>Before continuing, it helps to understand the three pieces of every Lyap scope:</p>
+        <ul>
+          <li><strong>State</strong> — declared with <code>scope.state({...})</code>. Plain JavaScript objects wrapped in deep reactive proxies. Mutating a property notifies bound directives automatically.</li>
+          <li><strong>Derived values</strong> — declared with <code>scope.derived({...})</code>. Computed values automatically recalculated whenever their referenced signals change.</li>
+          <li><strong>Directives</strong> — attributes like <code>ly-text</code>, <code>ly-bind</code>, <code>ly-model</code>, <code>ly-on</code>, <code>ly-if</code>, and <code>ly-for</code> that declare reactive behavior directly in HTML.</li>
+        </ul>
+
+        <div class="callout">
+          <svg class="callout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p><strong>Tip:</strong> Directives bind directly to fine-grained signals, meaning changes update only target DOM elements with zero virtual DOM overhead. See <a href="text.html">Text &amp; Show</a>.</p>
+        </div>
+
+        <h2 id="next-steps">Next steps</h2>
+        <ul>
+          <li><a href="state.html">State &amp; Derived</a> — the reactive heart of Lyap.</li>
+          <li><a href="events.html">Events &amp; Actions</a> — respond to clicks, inputs, and custom events.</li>
+          <li><a href="forms.html">Forms &amp; Binding</a> — two-way data binding with modifiers.</li>
+          <li><a href="reference.html">Directive Reference</a> — every directive at a glance.</li>
+        </ul>
+
+      </div>
+
+      <div class="pagination">
+        <template ly-if="app.prevLink">
+          <a class="page-link prev" ly-bind:href="app.prevLink.href">
+            <span class="page-label">← Previous</span>
+            <span class="page-title" ly-text="app.prevLink.label"></span>
+          </a>
+        </template>
+        <template ly-if="app.nextLink">
+          <a class="page-link next" ly-bind:href="app.nextLink.href">
+            <span class="page-label">Next →</span>
+            <span class="page-title" ly-text="app.nextLink.label"></span>
+          </a>
+        </template>
+      </div>
+
+      <footer class="footer">
+        <span>© 2026 <a href="index.html">Lyap</a> — lightweight HTML enhancement.</span>
+        <span>v<span ly-text="app.version"></span> &middot; Built with Lyap &middot; <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+      </footer>
+    </main>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <div class="toc-links">
+        <template ly-for="item in app.toc" ly-key="item.id">
+          <a class="toc-link" ly-bind:class="item.level === 3 ? 'toc-link sub' : 'toc-link'" ly-bind:href="'#' + item.id" ly-text="item.text"></a>
+        </template>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const app = Lyap.scope('app');
+    app.state({
+      navList: [],
+      current: window.LYAP_CURRENT || 'get-started',
+      drawer: false,
+      themeMenu: false,
+      theme: (() => { var t = 'system'; try { t = localStorage.getItem('lyap-theme') || 'system'; } catch (e) {} return t; })(),
+      toc: [],
+      version: window.LYAP_VERSION || '3.0.0-proto'
+    });
+
+    if (window.LYAP_NAV) {
+      window.LYAP_NAV.forEach(function (g) {
+        app.navList.push({ kind: 'group', label: g.group });
+        g.items.forEach(function (i) {
+          app.navList.push({ kind: 'link', id: i.id, href: i.href, label: i.label });
+        });
+      });
+    }
+
+    app.actions({
+      applyTheme() {
+        var mode = this.theme;
+        var saved = localStorage.getItem('lyap-theme');
+        if (saved) mode = saved;
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var resolved = mode === 'system' ? (dark ? 'dark' : 'light') : mode;
+        document.documentElement.dataset.theme = resolved;
+        var meta = document.getElementById('meta-theme');
+        if (meta) meta.content = resolved === 'dark' ? '#0b0d10' : '#ffffff';
+      },
+      setTheme(mode) {
+        this.theme = mode;
+        this.themeMenu = false;
+        localStorage.setItem('lyap-theme', mode);
+        this.applyTheme();
+      },
+      toggleThemeMenu() {
+        this.themeMenu = !this.themeMenu;
+      },
+      closeDrawer() {
+        this.drawer = false;
+      },
+      toggleDrawer() {
+        this.drawer = !this.drawer;
+      }
+    });
+
+    app.derived({
+      prevLink: () => {
+        var idx = -1;
+        for (var i = 0; i < (window.LYAP_FLAT || []).length; i++) if (window.LYAP_FLAT[i].id === app.current) idx = i;
+        if (idx <= 0) return null;
+        return window.LYAP_FLAT[idx - 1];
+      },
+      nextLink: () => {
+        var idx = -1;
+        for (var i = 0; i < (window.LYAP_FLAT || []).length; i++) if (window.LYAP_FLAT[i].id === app.current) idx = i;
+        if (idx === -1 || idx >= (window.LYAP_FLAT || []).length - 1) return null;
+        return window.LYAP_FLAT[idx + 1];
+      }
+    });
+
+    app.onMount(() => {
+      app.applyTheme();
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+        var saved = 'system';
+        try { saved = localStorage.getItem('lyap-theme') || 'system'; } catch (e) {}
+        if (saved === 'system') app.applyTheme();
+      });
+
+      var content = document.querySelector('.doc-content');
+      if (content) {
+        var headings = content.querySelectorAll('h2, h3');
+        headings.forEach(function (h) {
+          if (!h.id) {
+            var slug = (h.textContent || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            h.id = slug || 'section';
+          }
+          app.toc.push({ id: h.id, text: (h.textContent || '').trim(), level: h.tagName === 'H3' ? 3 : 2 });
+        });
+
+        if ('IntersectionObserver' in window) {
+          var spy = new IntersectionObserver(function (entries) {
+            var visible = entries.filter(function (e) { return e.isIntersecting; })
+              .sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+            if (visible.length) {
+              var id = visible[0].target.id;
+              document.querySelectorAll('.toc-link').forEach(function (l) {
+                l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+              });
+            }
+          }, { rootMargin: '-80px 0px -72% 0px', threshold: 0.05 });
+          headings.forEach(function (h) { spy.observe(h); });
+        }
+      }
+    });
+  </script>
+</div>
+
+</body>
+</html>

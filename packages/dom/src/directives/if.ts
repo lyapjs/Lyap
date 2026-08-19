@@ -2,9 +2,10 @@ import { createOwnedEffect, type ScopeHandle } from '../scope.js';
 import type { Runtime } from '../runtime.js';
 
 export type IfBranch = {
-  template: Element;
+  template: Node;
   conditionExpr?: string | undefined;
   type: 'if' | 'if-else' | 'else';
+  isTemplate?: boolean;
 };
 
 export function handleIfChain(
@@ -40,12 +41,20 @@ export function handleIfChain(
 
     markProcessed(currElement);
 
-    const template = currElement.cloneNode(true) as Element;
-    template.removeAttribute('ly-if');
-    template.removeAttribute('ly-if-else');
-    template.removeAttribute('ly-else');
+    const isTemplate = currElement.tagName.toLowerCase() === 'template';
+    const template = isTemplate
+      ? ((currElement as HTMLTemplateElement).content
+          ? (currElement as HTMLTemplateElement).content.cloneNode(true)
+          : currElement.cloneNode(true))
+      : (currElement.cloneNode(true) as Element);
 
-    branches.push({ template, conditionExpr: condExpr, type: branchType });
+    if (!isTemplate) {
+      (template as Element).removeAttribute('ly-if');
+      (template as Element).removeAttribute('ly-if-else');
+      (template as Element).removeAttribute('ly-else');
+    }
+
+    branches.push({ template, conditionExpr: condExpr, type: branchType, isTemplate });
 
     const nextSibling = getNextContiguousElementSibling(currElement);
     if (!nextSibling || (!nextSibling.hasAttribute('ly-if-else') && !nextSibling.hasAttribute('ly-else'))) {
@@ -116,10 +125,22 @@ export function handleIfChain(
 
     if (matchingIndex !== -1) {
       const branch = branches[matchingIndex]!;
-      const clone = branch.template.cloneNode(true) as Element;
-      anchor.parentNode?.insertBefore(clone, anchor);
-      activeNodes.push(clone);
-      scanElement(clone, locals);
+      if (branch.isTemplate) {
+        const frag = branch.template.cloneNode(true) as DocumentFragment;
+        const childNodes = Array.from(frag.childNodes);
+        for (const child of childNodes) {
+          anchor.parentNode?.insertBefore(child, anchor);
+          activeNodes.push(child);
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            scanElement(child as Element, locals);
+          }
+        }
+      } else {
+        const clone = (branch.template as Element).cloneNode(true) as Element;
+        anchor.parentNode?.insertBefore(clone, anchor);
+        activeNodes.push(clone);
+        scanElement(clone, locals);
+      }
     }
   });
 }

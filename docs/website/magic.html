@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic Variables — Lyap</title>
+<meta name="description" content="Context-aware magic variables ($event, $el, $refs, $nextTick) in Lyap.">
+<meta name="theme-color" id="meta-theme" content="#ffffff">
+<link rel="icon" href="favicons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+<link rel="apple-touch-icon" href="favicons/apple-touch-icon.png">
+<link rel="manifest" href="favicons/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function () {
+  var stored = null;
+  try { stored = localStorage.getItem('lyap-theme'); } catch (e) {}
+  var mode = stored || 'system';
+  var dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+})();
+</script>
+<script src="assets/site.js"></script>
+<script src="lyap.min.js"></script>
+</head>
+<body data-page="magic">
+<div id="app">
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button class="nav-icon-btn menu-btn" ly-on:click="app.toggleDrawer()" ly-bind:aria-expanded="app.drawer" aria-label="Toggle navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a class="brand" href="index.html">
+        <span class="brand-mark">⚡</span>
+        <span>Lyap</span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="get-started.html">Docs</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+      <div class="nav-right">
+        <div class="theme-toggle">
+          <button class="nav-icon-btn" ly-on:click="app.toggleThemeMenu()" aria-label="Change color theme">
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <div class="theme-menu" ly-show="app.themeMenu" role="menu">
+            <button class="theme-menu-item" ly-on:click="app.setTheme('system')" ly-bind:class="app.theme === 'system' ? 'theme-menu-item selected' : 'theme-menu-item'" role="menuitemradio" aria-checked="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span>System</span>
+              <svg class="check" ly-show="app.theme === 'system'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="theme-menu-item" ly-on:click="app.setTheme('light')" ly-bind:class="app.theme === 'light' ? 'theme-menu-item selected' : 'theme-menu-item'" role="menuitemradio" aria-checked="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <span>Light</span>
+              <svg class="check" ly-show="app.theme === 'light'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <button class="theme-menu-item" ly-on:click="app.setTheme('dark')" ly-bind:class="app.theme === 'dark' ? 'theme-menu-item selected' : 'theme-menu-item'" role="menuitemradio" aria-checked="false">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              <span>Dark</span>
+              <svg class="check" ly-show="app.theme === 'dark'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="drawer-backdrop" ly-show="app.drawer" ly-on:click="app.closeDrawer()"></div>
+
+    <aside class="sidebar" ly-bind:class="app.drawer ? 'sidebar open' : 'sidebar'" aria-label="Documentation">
+      <div class="sidebar-inner">
+        <nav class="side-nav">
+          <template ly-for="row in app.navList" ly-key="row.id || row.label">
+            <p class="nav-group" ly-if="row.kind === 'group'" ly-text="row.label"></p>
+            <a class="nav-link" ly-else ly-bind:href="row.href" ly-bind:class="row.id === app.current ? 'nav-link active' : 'nav-link'" ly-text="row.label"></a>
+          </template>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="doc doc-content">
+        <h1 id="magic-variables">Magic Variables</h1>
+        <p class="lead">Lyap provides context-aware variables within event handlers, action handlers, and DOM lifecycle callbacks.</p>
+
+        <h2 id="dollar-event">$event — the native DOM event</h2>
+        <p>Available inside <code>ly-on:*</code> directive expressions and action arguments.</p>
+        <table class="doc-table">
+          <thead><tr><th>Property</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>$event.target</code></td><td>The DOM element that dispatched the event.</td></tr>
+            <tr><td><code>$event.target.value</code></td><td>Current value of the input or control.</td></tr>
+            <tr><td><code>$event.key</code></td><td>Keyboard key string (e.g. <code>'Enter'</code>).</td></tr>
+            <tr><td><code>$event.preventDefault()</code></td><td>Prevents default browser behavior.</td></tr>
+            <tr><td><code>$event.stopPropagation()</code></td><td>Halts event propagation.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="dollar-el">$el — current element</h2>
+        <p>A direct reference to the current DOM node executing the directive or action.</p>
+        <pre class="doc-code" data-title="el.html"><code class="language-html">&lt;button ly-on:click="$el.blur()"&gt;Blur me&lt;/button&gt;</code></pre>
+
+        <h2 id="dollar-refs">$refs — element reference map</h2>
+        <p>Access DOM elements tagged with <code>ly-ref:NAME</code> directly through <code>this.$refs.NAME</code> inside action handlers.</p>
+
+        <div class="example">
+          <div class="example-head"><span>Live preview</span><span class="badge">lyap</span></div>
+          <div class="example-body">
+            <div>
+              <script>
+                const refDemo = Lyap.scope('refDemo');
+                refDemo.actions({
+                  focusSearch() {
+                    if (this.$refs && this.$refs.searchInput) {
+                      this.$refs.searchInput.focus();
+                    }
+                  }
+                });
+              </script>
+              <input ly-ref:searchInput class="field" type="text" placeholder="Search...">
+              <div class="flex wrap" style="margin-top: 0.5rem;">
+                <button class="btn btn-primary btn-sm" ly-on:click="refDemo.focusSearch()">Focus the input</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <pre class="doc-code" data-title="refs.html"><code class="language-html">&lt;input ly-ref:searchInput&gt;
+&lt;button ly-on:click="app.focusSearch()"&gt;Focus&lt;/button&gt;
+
+&lt;script&gt;
+    const app = Lyap.scope('app');
+    app.actions({
+        focusSearch() {
+            this.$refs.searchInput.focus();
+        }
+    });
+&lt;/script&gt;</code></pre>
+
+        <h2 id="dollar-next-tick">$nextTick — async DOM flush</h2>
+        <p>Schedule a callback or await a Promise resolving after all pending reactive DOM updates have flushed.</p>
+
+        <pre class="doc-code" data-title="next-tick.html"><code class="language-html">&lt;script&gt;
+    const app = Lyap.scope('app');
+    app.state({ count: 0 });
+    app.actions({
+        async bump() {
+            this.count++;
+            await Lyap.nextTick();
+            // The DOM text content is now guaranteed to be updated
+            console.log(document.querySelector('p').textContent);
+        }
+    });
+&lt;/script&gt;
+&lt;p ly-text="app.count"&gt;&lt;/p&gt;
+&lt;button ly-on:click="app.bump()"&gt;Bump&lt;/button&gt;</code></pre>
+      </div>
+
+      <div class="pagination">
+        <template ly-if="app.prevLink">
+          <a class="page-link prev" ly-bind:href="app.prevLink.href">
+            <span class="page-label">← Previous</span>
+            <span class="page-title" ly-text="app.prevLink.label"></span>
+          </a>
+        </template>
+        <template ly-if="app.nextLink">
+          <a class="page-link next" ly-bind:href="app.nextLink.href">
+            <span class="page-label">Next →</span>
+            <span class="page-title" ly-text="app.nextLink.label"></span>
+          </a>
+        </template>
+      </div>
+
+      <footer class="footer">
+        <span>© 2026 <a href="index.html">Lyap</a> — lightweight HTML enhancement.</span>
+        <span>v<span ly-text="app.version"></span> &middot; Built with Lyap &middot; <a href="https://github.com/lyapjs/Lyap" target="_blank" rel="noopener noreferrer">GitHub</a></span>
+      </footer>
+    </main>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <div class="toc-links">
+        <template ly-for="item in app.toc" ly-key="item.id">
+          <a class="toc-link" ly-bind:class="item.level === 3 ? 'toc-link sub' : 'toc-link'" ly-bind:href="'#' + item.id" ly-text="item.text"></a>
+        </template>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const app = Lyap.scope('app');
+    app.state({
+      navList: [],
+      current: window.LYAP_CURRENT || 'magic',
+      drawer: false,
+      themeMenu: false,
+      theme: (() => { var t = 'system'; try { t = localStorage.getItem('lyap-theme') || 'system'; } catch (e) {} return t; })(),
+      toc: [],
+      version: window.LYAP_VERSION || '3.0.0-proto'
+    });
+
+    if (window.LYAP_NAV) {
+      window.LYAP_NAV.forEach(function (g) {
+        app.navList.push({ kind: 'group', label: g.group });
+        g.items.forEach(function (i) {
+          app.navList.push({ kind: 'link', id: i.id, href: i.href, label: i.label });
+        });
+      });
+    }
+
+    app.actions({
+      applyTheme() {
+        var mode = this.theme;
+        var saved = localStorage.getItem('lyap-theme');
+        if (saved) mode = saved;
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var resolved = mode === 'system' ? (dark ? 'dark' : 'light') : mode;
+        document.documentElement.dataset.theme = resolved;
+        var meta = document.getElementById('meta-theme');
+        if (meta) meta.content = resolved === 'dark' ? '#0b0d10' : '#ffffff';
+      },
+      setTheme(mode) {
+        this.theme = mode;
+        this.themeMenu = false;
+        localStorage.setItem('lyap-theme', mode);
+        this.applyTheme();
+      },
+      toggleThemeMenu() {
+        this.themeMenu = !this.themeMenu;
+      },
+      closeDrawer() {
+        this.drawer = false;
+      },
+      toggleDrawer() {
+        this.drawer = !this.drawer;
+      }
+    });
+
+    app.derived({
+      prevLink: () => {
+        var idx = -1;
+        for (var i = 0; i < (window.LYAP_FLAT || []).length; i++) if (window.LYAP_FLAT[i].id === app.current) idx = i;
+        if (idx <= 0) return null;
+        return window.LYAP_FLAT[idx - 1];
+      },
+      nextLink: () => {
+        var idx = -1;
+        for (var i = 0; i < (window.LYAP_FLAT || []).length; i++) if (window.LYAP_FLAT[i].id === app.current) idx = i;
+        if (idx === -1 || idx >= (window.LYAP_FLAT || []).length - 1) return null;
+        return window.LYAP_FLAT[idx + 1];
+      }
+    });
+
+    app.onMount(() => {
+      app.applyTheme();
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+        var saved = 'system';
+        try { saved = localStorage.getItem('lyap-theme') || 'system'; } catch (e) {}
+        if (saved === 'system') app.applyTheme();
+      });
+
+      var content = document.querySelector('.doc-content');
+      if (content) {
+        var headings = content.querySelectorAll('h2, h3');
+        headings.forEach(function (h) {
+          if (!h.id) {
+            var slug = (h.textContent || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            h.id = slug || 'section';
+          }
+          app.toc.push({ id: h.id, text: (h.textContent || '').trim(), level: h.tagName === 'H3' ? 3 : 2 });
+        });
+
+        if ('IntersectionObserver' in window) {
+          var spy = new IntersectionObserver(function (entries) {
+            var visible = entries.filter(function (e) { return e.isIntersecting; })
+              .sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+            if (visible.length) {
+              var id = visible[0].target.id;
+              document.querySelectorAll('.toc-link').forEach(function (l) {
+                l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+              });
+            }
+          }, { rootMargin: '-80px 0px -72% 0px', threshold: 0.05 });
+          headings.forEach(function (h) { spy.observe(h); });
+        }
+      }
+    });
+  </script>
+</div>
+
+</body>
+</html>
