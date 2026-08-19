@@ -7,6 +7,8 @@
     ".": "./dist/index.js"
   },
   "scripts": {
+    "build": "tsc && npm run build:min",
+    "build:min": "esbuild src/index.ts --bundle --minify --format=iife --outfile=dist/lyap.min.js",
     "test": "vitest run --environment happy-dom"
   },
   "keywords": [],
@@ -19,6 +21,7 @@
     "vitest": "^4.1.10"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "happy-dom": "^20.0.0"
   }
 }

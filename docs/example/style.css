@@ -1,0 +1,565 @@
+/* ==========================================================================
+   Lyap.js - Classic & Elegant Theme
+   ========================================================================== */
+
+:root {
+  --bg-primary: #090d16;
+  --bg-secondary: #111827;
+  --bg-card: #131b2e;
+  --bg-card-elevated: #1a243d;
+  --bg-surface-dark: #070a12;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  
+  --gold-primary: #e2b144;
+  --gold-light: #fef08a;
+  --gold-dark: #b48518;
+  --gold-glow: rgba(226, 177, 68, 0.25);
+  
+  --accent-blue: #38bdf8;
+  --accent-azure: #2563eb;
+  --accent-emerald: #10b981;
+  --accent-ruby: #f43f5e;
+  --accent-amethyst: #a855f7;
+
+  --border-subtle: #1e293b;
+  --border-classic: #334155;
+  --border-gold: rgba(226, 177, 68, 0.4);
+  
+  --border-radius: 12px;
+  --border-radius-sm: 6px;
+  --border-radius-lg: 16px;
+  
+  --shadow-classic: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(226, 177, 68, 0.1);
+  --shadow-gold-hover: 0 14px 40px -5px rgba(0, 0, 0, 0.7), 0 0 20px rgba(226, 177, 68, 0.25);
+  
+  --font-serif: 'Playfair Display', 'Cinzel', Georgia, serif;
+  --font-display: 'Cinzel', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(226, 177, 68, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Navigation Bar (Classic Crest & Ribbon)
+   ========================================================================== */
+.navbar {
+  background-color: rgba(9, 13, 22, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-classic);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.logo-badge {
+  background: linear-gradient(135deg, #e2b144 0%, #b48518 100%);
+  color: #090d16;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #fef08a;
+  box-shadow: 0 2px 12px rgba(226, 177, 68, 0.35);
+  letter-spacing: 0.05em;
+}
+
+.logo-title {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.logo-subtitle {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  margin-left: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border-classic);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================================
+   Layout Container
+   ========================================================================== */
+.container {
+  max-width: 1200px;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+}
+
+/* ==========================================================================
+   Hero Banner (Regal & Classical)
+   ========================================================================== */
+.hero-banner {
+  background: linear-gradient(180deg, rgba(19, 27, 46, 0.95) 0%, rgba(9, 13, 22, 0.98) 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--border-radius-lg);
+  padding: 3.5rem 2rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-classic);
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+}
+
+.hero-ornament {
+  color: var(--gold-primary);
+  font-size: 1.25rem;
+  letter-spacing: 0.5em;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: 2.75rem;
+  font-weight: 800;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 30%, #e2b144 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+  color: var(--text-secondary);
+  font-size: 1.15rem;
+  max-width: 760px;
+  margin: 0 auto 2rem;
+  line-height: 1.75;
+}
+
+.feature-pills {
+  display: flex;
+  justify-content: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  background: rgba(19, 27, 46, 0.8);
+  border: 1px solid var(--border-classic);
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.pill:hover {
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+  transform: translateY(-1px);
+}
+
+.pill-highlight {
+  border-color: var(--border-gold);
+  color: var(--gold-primary);
+  background: rgba(226, 177, 68, 0.08);
+}
+
+/* ==========================================================================
+   Navigation Tabs
+   ========================================================================== */
+.tabs-nav {
+  display: flex;
+  gap: 0.65rem;
+  border-bottom: 1px solid var(--border-classic);
+  margin-bottom: 2.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+}
+
+.tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-serif);
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab-btn.active {
+  background: var(--bg-card);
+  color: var(--gold-primary);
+  border-color: var(--border-classic);
+  border-top-color: var(--gold-primary);
+  border-top-width: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Grid & Card Systems
+   ========================================================================== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 2rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-classic);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--shadow-classic);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.card:hover {
+  border-color: var(--border-gold);
+  box-shadow: var(--shadow-gold-hover);
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.card-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Buttons (Classic Foiled & Antique Brass)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.925rem;
+  padding: 0.65rem 1.3rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #d4af37 0%, #b48518 100%);
+  color: #090d16;
+  font-weight: 700;
+  border: 1px solid #fef08a;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, #fef08a 0%, #d4af37 100%);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(30, 41, 59, 0.7);
+  color: var(--text-primary);
+  border-color: var(--border-classic);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-elevated);
+  border-color: var(--border-gold);
+  color: var(--gold-light);
+}
+
+.btn-danger {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fda4af;
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(244, 63, 94, 0.25);
+  color: #fff;
+  border-color: var(--accent-ruby);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.825rem;
+}
+
+/* ==========================================================================
+   Form Controls (Classic Parchment & Slate)
+   ========================================================================== */
+.form-group {
+  margin-bottom: 1.4rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  background: var(--bg-surface-dark);
+  border: 1px solid var(--border-classic);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--border-radius-sm);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+  background: #0b1120;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-label,
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.925rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.checkbox-label:hover,
+.radio-label:hover {
+  color: var(--text-primary);
+}
+
+.checkbox-label input,
+.radio-label input {
+  accent-color: var(--gold-primary);
+  width: 1.15rem;
+  height: 1.15rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Code & Walkthrough Boxes
+   ========================================================================== */
+.code-box {
+  background: #060911;
+  border: 1px solid #1a243d;
+  border-radius: var(--border-radius-sm);
+  padding: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #7dd3fc;
+  overflow-x: auto;
+  margin-top: 1rem;
+  line-height: 1.6;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.code-title {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold-primary);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed var(--border-classic);
+}
+
+/* ==========================================================================
+   Todo & Task List Styling
+   ========================================================================== */
+.todo-input-row {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.15rem;
+  background: var(--bg-surface-dark);
+  border: 1px solid var(--border-classic);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.todo-item:hover {
+  border-color: var(--border-gold);
+  background: #0d1424;
+}
+
+.todo-item.completed {
+  opacity: 0.55;
+  border-color: #1a243d;
+  background: transparent;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.todo-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.todo-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Badges & Indicators
+   ========================================================================== */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-blue { 
+  background: rgba(56, 189, 248, 0.15); 
+  color: #7dd3fc; 
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.badge-green { 
+  background: rgba(16, 185, 129, 0.15); 
+  color: #6ee7b7; 
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-gold { 
+  background: rgba(226, 177, 68, 0.15); 
+  color: var(--gold-light); 
+  border: 1px solid var(--border-gold);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-classic);
+  border-radius: var(--border-radius-sm);
+  background: rgba(7, 10, 18, 0.5);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border-classic);
+}

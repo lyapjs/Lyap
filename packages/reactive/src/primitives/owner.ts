@@ -39,11 +39,11 @@ export class Owner {
         if (firstError !== undefined) throw firstError;
     }
 
-    run() {
+    run<T>(fn: () => T = this.fn as unknown as () => T): T {
         const prev = currentOwner;
         currentOwner = this;
         try {
-            return this.fn();
+            return fn();
         } finally {
             currentOwner = prev;
         }
